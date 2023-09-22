@@ -1,9 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include <stdexcept>
 #include "common.hpp"
-
-#define WIDTH  1280
-#define HEIGHT 800
 
 i32 main() {
   // It work if current os display resolution has support FullScreenMode.
@@ -20,14 +16,15 @@ i32 main() {
     "SFML!",
     sf::Style::Titlebar | sf::Style::Close // WindowMode default setting
   );
-  window.setFramerateLimit(60);
 
-  sf::Clock clock;
-  usize frameCount = 0;
+  // fps manager
+  FPSManager fpsmng;
+  fpsmng.setFramerateLimit(60);
 
+  // fps counter
   sf::Font fnt1;
-  if (!fnt1.loadFromFile("/Users/tiny/Library/Fonts/GoMonoNerdFont-Regular.ttf")) {
-    throw std::runtime_error("font load failed!");
+  if (!fnt1.loadFromFile("res/font/GoMonoNerdFont-Regular.ttf")) {
+    throw std::runtime_error("fnt1 load failed!");
   }
   sf::Text txt1;
   txt1.setFont(fnt1);
@@ -36,33 +33,67 @@ i32 main() {
   txt1.setCharacterSize(16);
   txt1.setPosition(0, 0);
 
+  // background
   sf::Texture txr1;
-  if (!txr1.loadFromFile("res/space.png")) {
-    throw std::runtime_error("image load failed!");
+  if (!txr1.loadFromFile("res/background/space.png")) {
+    throw std::runtime_error("txr1 load failed!");
   }
   sf::RectangleShape rts1;
   rts1.setSize(sf::Vector2f(WIDTH, HEIGHT));
   rts1.setTexture(&txr1);
   rts1.setPosition(0, 0);
 
+  // monster
+  sf::Image img1;
+  if (!img1.loadFromFile("res/Monsters/TrollDark.PNG")) {
+    throw std::runtime_error("img1 load failed!");
+  }
+  img1.createMaskFromColor(img1.getPixel(0, 0)); // image background to invisible
+  sf::Texture txr2;
+  if (!txr2.loadFromImage(img1)) {
+    throw std::runtime_error("txr2 load failed!");
+  }
+  sf::RectangleShape rts2;
+  rts2.setSize(sf::Vector2f(100, 100));
+  rts2.setTexture(&txr2);
+  rts2.setPosition(300, 300);
+
+  // key manager
+  KeyManager keymng(sf::Keyboard::KeyCount);
+  keymng.setCallback(sf::Keyboard::Q, [&]() {
+    window.close();
+  });
+  keymng.setCallback(sf::Keyboard::Up, [&]() {
+    rts2.move(0, -MOVE_UNIT);
+  });
+  keymng.setCallback(sf::Keyboard::Down, [&]() {
+    rts2.move(0, MOVE_UNIT);
+  });
+  keymng.setCallback(sf::Keyboard::Left, [&]() {
+    rts2.move(-MOVE_UNIT, 0);
+  });
+  keymng.setCallback(sf::Keyboard::Right, [&]() {
+    rts2.move(MOVE_UNIT, 0);
+  });
+
   auto event = sf::Event({});
   while (window.isOpen()) {
+    fpsmng.framePulse();
+    txt1.setString(std::to_string(fpsmng.getCurrentFPS()));
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
         window.close();
       } else if (event.type == sf::Event::KeyPressed) {
-        window.close();
+        keymng.keyPress(event.key.code);
+      } else if (event.type == sf::Event::KeyReleased) {
+        keymng.keyRelease(event.key.code);
       }
     }
 
-    ++frameCount;
-    if (clock.getElapsedTime() >= sf::seconds(1.0f)) {
-      txt1.setString(std::string("FPS: ") + std::to_string(frameCount));
-      clock.restart();
-      frameCount = 0;
-    }
+    keymng.callbackAll();
 
     window.draw(rts1);
+    window.draw(rts2);
     window.draw(txt1);
     window.display();
   }
