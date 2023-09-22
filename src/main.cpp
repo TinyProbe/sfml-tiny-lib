@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio/Music.hpp>
+#include <SFML/System/Time.hpp>
 #include "common.hpp"
 
 i32 main() {
@@ -58,6 +60,14 @@ i32 main() {
   rts2.setTexture(&txr2);
   rts2.setPosition(300, 300);
 
+  // background music
+  sf::Music msc1;
+  if (!msc1.openFromFile("res/sound/bgm.mp3")) {
+    throw std::runtime_error("msc1 load failed!");
+  }
+  msc1.setLoop(true);
+  msc1.play();
+
   // key manager
   KeyManager keymng(sf::Keyboard::KeyCount);
   keymng.setCallback(sf::Keyboard::Q, [&]() {
@@ -74,6 +84,18 @@ i32 main() {
   });
   keymng.setCallback(sf::Keyboard::Right, [&]() {
     rts2.move(MOVE_UNIT, 0);
+  });
+  keymng.setCallback(sf::Keyboard::H, [&]() {
+
+  });
+  keymng.setCallback(sf::Keyboard::L, [&]() {
+
+  });
+  keymng.setCallback(sf::Keyboard::J, [&]() {
+    msc1.setVolume(fmax(msc1.getVolume() - 2, 0));
+  });
+  keymng.setCallback(sf::Keyboard::K, [&]() {
+    msc1.setVolume(fmin(msc1.getVolume() + 2, 100));
   });
 
   auto event = sf::Event({});
