@@ -1,6 +1,5 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/Music.hpp>
-#include <SFML/System/Time.hpp>
 #include "common.hpp"
 
 i32 main() {
@@ -65,38 +64,35 @@ i32 main() {
   if (!msc1.openFromFile("res/sound/bgm.mp3")) {
     throw std::runtime_error("msc1 load failed!");
   }
+  msc1.setVolume(100);
   msc1.setLoop(true);
   msc1.play();
 
-  // key manager
+  // key manager & key map
   KeyManager keymng(sf::Keyboard::KeyCount);
-  keymng.setCallback(sf::Keyboard::Q, [&]() {
+  KeyManager::KeyMap keymap(sf::Keyboard::KeyCount);
+  keymap.setCallback(sf::Keyboard::Escape, KeyManager::Press, [&]() {
     window.close();
   });
-  keymng.setCallback(sf::Keyboard::Up, [&]() {
+  keymap.setCallback(sf::Keyboard::Up, KeyManager::Pressed, [&]() {
     rts2.move(0, -MOVE_UNIT);
   });
-  keymng.setCallback(sf::Keyboard::Down, [&]() {
+  keymap.setCallback(sf::Keyboard::Down, KeyManager::Pressed, [&]() {
     rts2.move(0, MOVE_UNIT);
   });
-  keymng.setCallback(sf::Keyboard::Left, [&]() {
+  keymap.setCallback(sf::Keyboard::Left, KeyManager::Pressed, [&]() {
     rts2.move(-MOVE_UNIT, 0);
   });
-  keymng.setCallback(sf::Keyboard::Right, [&]() {
+  keymap.setCallback(sf::Keyboard::Right, KeyManager::Pressed, [&]() {
     rts2.move(MOVE_UNIT, 0);
   });
-  keymng.setCallback(sf::Keyboard::H, [&]() {
-
-  });
-  keymng.setCallback(sf::Keyboard::L, [&]() {
-
-  });
-  keymng.setCallback(sf::Keyboard::J, [&]() {
-    msc1.setVolume(fmax(msc1.getVolume() - 2, 0));
-  });
-  keymng.setCallback(sf::Keyboard::K, [&]() {
-    msc1.setVolume(fmin(msc1.getVolume() + 2, 100));
-  });
+  keymap.setCallback(sf::Keyboard::Hyphen, KeyManager::Press, [&]() {
+    msc1.setVolume(fmax(msc1.getVolume() - 3, 0));
+  }, true);
+  keymap.setCallback(sf::Keyboard::Equal, KeyManager::Press, [&]() {
+    msc1.setVolume(fmin(msc1.getVolume() + 3, 100));
+  }, true);
+  keymng.setKeyMap(&keymap);
 
   auto event = sf::Event({});
   while (window.isOpen()) {
@@ -112,7 +108,7 @@ i32 main() {
       }
     }
 
-    keymng.callbackAll();
+    keymng.keyFramework();
 
     window.draw(rts1);
     window.draw(rts2);
