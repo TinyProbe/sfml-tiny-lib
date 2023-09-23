@@ -9,6 +9,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <cmath>
 #include <chrono>
 #include <thread>
 #include <list>
