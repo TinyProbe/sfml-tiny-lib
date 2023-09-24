@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/Music.hpp>
+#include <SFML/System/Time.hpp>
 #include "common.hpp"
 
 i32 main() {
@@ -68,6 +69,14 @@ i32 main() {
   msc1.setLoop(true);
   msc1.play();
 
+  // attack sound
+  sf::Music msc2;
+  if (!msc2.openFromFile("res/sound/attack.mp3.flac")) {
+    throw std::runtime_error("msc2 load failed!");
+  }
+  msc2.setVolume(100);
+  msc2.setLoop(false);
+
   // key manager & key map
   KeyManager keymng(sf::Keyboard::KeyCount);
   KeyManager::KeyMap keymap(sf::Keyboard::KeyCount);
@@ -92,6 +101,15 @@ i32 main() {
   keymap.setCallback(sf::Keyboard::Equal, KeyManager::Press, [&]() {
     msc1.setVolume(fmin(msc1.getVolume() + 3, 100));
   }, true);
+  keymap.setCallback(sf::Keyboard::LBracket, KeyManager::Press, [&]() {
+    msc1.setPlayingOffset(msc1.getPlayingOffset() - sf::seconds(2));
+  }, true);
+  keymap.setCallback(sf::Keyboard::RBracket, KeyManager::Press, [&]() {
+    msc1.setPlayingOffset(msc1.getPlayingOffset() + sf::seconds(2));
+  }, true);
+  keymap.setCallback(sf::Keyboard::Space, KeyManager::Press, [&]() {
+    msc2.play();
+  });
   keymng.setKeyMap(&keymap);
 
   auto event = sf::Event({});
