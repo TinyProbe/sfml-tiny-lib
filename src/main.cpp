@@ -37,7 +37,7 @@ i32 main() {
 
   // background
   sf::Texture txr1;
-  if (!txr1.loadFromFile("res/background/space.png")) {
+  if (!txr1.loadFromFile("res/background/ereve.jpg")) {
     throw std::runtime_error("txr1 load failed!");
   }
   sf::RectangleShape rts1;
@@ -62,7 +62,7 @@ i32 main() {
 
   // background music
   sf::Music msc1;
-  if (!msc1.openFromFile("res/sound/bgm.mp3")) {
+  if (!msc1.openFromFile("res/sound/ereve.mp3")) {
     throw std::runtime_error("msc1 load failed!");
   }
   msc1.setVolume(100);
@@ -77,9 +77,13 @@ i32 main() {
   msc2.setVolume(100);
   msc2.setLoop(false);
 
+  // sprite ...
+
+
   // key manager & key map
   KeyManager keymng(sf::Keyboard::KeyCount);
   KeyManager::KeyMap keymap(sf::Keyboard::KeyCount);
+  keymng.setKeyMap(keymap);
   keymap.setCallback(sf::Keyboard::Escape, KeyManager::Press, [&]() {
     window.close();
   });
@@ -110,7 +114,18 @@ i32 main() {
   keymap.setCallback(sf::Keyboard::Space, KeyManager::Press, [&]() {
     msc2.play();
   });
-  keymng.setKeyMap(&keymap);
+  // keymap.moveCallback(sf::Keyboard::Hyphen, sf::Keyboard::Equal, KeyManager::Press);
+  // auto tmp = keymap.popCallback(sf::Keyboard::Space, KeyManager::Press);
+  // keymap.setCallback(sf::Keyboard::B, KeyManager::Press, tmp.first, tmp.second);
+
+  // duration output test
+  TimePointNano prev, now;
+  prev = fpsmng.getFrameTime();
+  keymap.setCallback(sf::Keyboard::Enter, KeyManager::Press, [&]() {
+    now = fpsmng.getFrameTime();
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(now - prev).count() << "ms\n";
+    prev = now;
+  });
 
   auto event = sf::Event({});
   while (window.isOpen()) {
@@ -125,9 +140,7 @@ i32 main() {
         keymng.keyRelease(event.key.code);
       }
     }
-
     keymng.keyFramework();
-
     window.draw(rts1);
     window.draw(rts2);
     window.draw(txt1);

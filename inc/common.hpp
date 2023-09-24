@@ -2,7 +2,7 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
-#define WIDTH  1280
+#define WIDTH  1200
 #define HEIGHT 800
 
 #define MOVE_UNIT 5
@@ -29,19 +29,21 @@ using usize = unsigned long;
 using f32 = float;
 using f64 = double;
 
+using DurationNano = std::chrono::duration<i64, std::nano>;
+using TimePointNano = std::chrono::time_point<std::chrono::steady_clock, DurationNano>;
+
 class FPSManager {
   usize framerate_limit;
-  std::chrono::duration<i64, std::nano> term;
-  std::list<std::chrono::time_point<std::chrono::steady_clock,
-    std::chrono::duration<i64, std::nano>>> time_per_frame;
+  DurationNano term;
+  std::list<TimePointNano> time_per_frame;
 
 public:
   FPSManager() :
     framerate_limit(usize(-1)),
-    term(std::chrono::duration<i64, std::nano>(1000000000 / this->framerate_limit)) {}
+    term(DurationNano(1000000000 / this->framerate_limit)) {}
   FPSManager(usize const &framerate_limit) :
     framerate_limit(framerate_limit),
-    term(std::chrono::duration<i64, std::nano>(1000000000 / this->framerate_limit)) {}
+    term(DurationNano(1000000000 / this->framerate_limit)) {}
   FPSManager(FPSManager const &rhs) { *this = rhs; }
   virtual FPSManager &operator=(FPSManager const &rhs) {
     if (this == &rhs) { return *this; }
@@ -57,34 +59,40 @@ public:
   }
   virtual void setFramerateLimit(usize const &framerate_limit) {
     this->framerate_limit = (framerate_limit ? framerate_limit : usize(-1));
-    this->term = std::chrono::duration<i64, std::nano>(1000000000 / this->framerate_limit);
+    this->term = DurationNano(1000000000 / this->framerate_limit);
   }
-  virtual std::chrono::duration<i64, std::nano> const &getTerm() const {
+  virtual DurationNano const &getTerm() const {
     return this->term;
   }
   virtual usize getCurrentFPS() const {
     return this->time_per_frame.size();
   }
+  virtual TimePointNano getFrameTime() {
+    return (!this->time_per_frame.empty()
+    ? this->time_per_frame.back()
+    : std::chrono::steady_clock::now());
+  }
   virtual void framePulse() {
     using namespace std::chrono_literals;
-    std::chrono::time_point<std::chrono::steady_clock,
-      std::chrono::duration<i64, std::nano>> now = std::chrono::steady_clock::now();
-    std::chrono::duration<i64, std::nano> diff
-      = (time_per_frame.size() ? now - time_per_frame.back() : 0ms);
+    TimePointNano now = std::chrono::steady_clock::now();
+    DurationNano diff = (!time_per_frame.empty() ? now - time_per_frame.back() : 0ms);
     if (this->term > diff) {
       diff = this->term - diff;
       std::this_thread::sleep_for(diff);
       now += diff;
     }
     this->time_per_frame.push_back(now);
-    std::chrono::time_point<std::chrono::steady_clock,
-      std::chrono::duration<i64, std::nano>> cutline = now - 1000ms;
+    TimePointNano cutline = now - 1000ms;
     while (this->time_per_frame.size() && this->time_per_frame.front() <= cutline) {
       this->time_per_frame.pop_front();
     }
   }
 
 };
+
+using Callback = std::function<void()>;
+using CallbackElement = std::vector<Callback>;
+using CallbackStore = std::vector<CallbackElement>;
 
 class KeyManager {
 public:
@@ -95,79 +103,145 @@ public:
     KindCount,
   };
   class KeyMap {
-    std::vector<std::vector<std::function<void()>>> callbacks;
+    CallbackStore callbacks;
     std::vector<bool> can_repeat;
-    bool is_linked;
+    KeyManager const *key_manager;
 
   public:
-    KeyMap() : is_linked() {}
-    KeyMap(usize const &key_count) : is_linked() {
-      this->callbacks.resize(key_count, std::vector<std::function<void()>>(KindCount));
+    KeyMap() : key_manager() {}
+    KeyMap(usize const &key_count) : key_manager() {
+      this->callbacks.resize(key_count, CallbackElement(KeyManager::KindCount));
       this->can_repeat.resize(key_count);
     }
-    KeyMap(KeyMap const &rhs) : is_linked() { *this = rhs; }
+    KeyMap(KeyMap const &rhs) : key_manager() { *this = rhs; }
     virtual KeyMap &operator=(KeyMap const &rhs) {
       if (this == &rhs) { return *this; }
       this->callbacks.assign(rhs.callbacks.begin(), rhs.callbacks.end());
       this->can_repeat.assign(rhs.can_repeat.begin(), rhs.can_repeat.end());
       return *this;
     }
-    virtual ~KeyMap() {}
+    virtual ~KeyMap() {
+      if (this->key_manager != nullptr) {
+        const_cast<KeyManager *>(this->key_manager)->unlink();
+      }
+    }
 
     virtual usize getKeyCount() const {
       return this->callbacks.size();
     }
     virtual void setKeyCount(usize const &key_count) {
-      if (this->is_linked) {
+      if (this->key_manager != nullptr) {
         throw std::runtime_error("Already linked KeyManager.");
       }
-      this->callbacks.resize(key_count, std::vector<std::function<void()>>(KindCount));
+      this->callbacks.resize(key_count, CallbackElement(KeyManager::KindCount));
       this->can_repeat.resize(key_count);
     }
 
-    virtual std::vector<std::vector<std::function<void()>>> const &getCallbacks() const {
+    virtual CallbackStore const &getCallbacks() const {
       return this->callbacks;
     }
-    virtual std::function<void()> const &getCallback(usize const &key_code, usize const &kind_code) const {
-      if (key_code >= this->getKeyCount()) {
-        throw std::runtime_error("No exist KeyCode.");
-      } else if (kind_code >= KindCount) {
-        throw std::runtime_error("No exist KindCode.");
-      }
+    virtual Callback const &getCallback(
+      usize const &key_code,
+      usize const &kind_code
+    ) const {
+      this->codeCheck(key_code, usize(), kind_code);
       return this->callbacks[key_code][kind_code];
     }
     virtual void setCallback(
       usize const &key_code,
       usize const &kind_code,
-      std::function<void()> callback,
+      Callback callback,
       bool const &can_repeat = false
     ) {
-      if (key_code >= this->getKeyCount()) {
-        throw std::runtime_error("No exist KeyCode.");
-      } else if (kind_code >= KindCount) {
-        throw std::runtime_error("No exist KindCode.");
-      }
-      this->callbacks[key_code][kind_code] = callback;
+      this->codeCheck(key_code, usize(), kind_code);
+      this->callbacks[key_code][kind_code] = std::move(callback);
       if (kind_code == Press) {
         this->can_repeat[key_code] = can_repeat;
       }
     }
-    
-    virtual bool canRepeat(usize const &key_code) const {
-      if (key_code >= this->getKeyCount()) {
-        throw std::runtime_error("No exist KeyCode.");
+    virtual std::pair<Callback, bool> popCallback(
+      usize const &key_code,
+      usize const &kind_code
+    ) {
+      this->codeCheck(key_code, usize(), kind_code);
+      std::pair<Callback, bool> tmp({
+        std::move(this->callbacks[key_code][kind_code]),
+        bool()
+      });
+      this->callbacks[key_code][kind_code] = Callback();
+      if (kind_code == Press) {
+        tmp.second = this->can_repeat[key_code];
+        this->can_repeat[key_code] = bool();
       }
+      return std::move(tmp);
+    }
+    virtual void copyCallback(
+      usize const &key_code_from,
+      usize const &key_code_to,
+      usize const &kind_code
+    ) {
+      this->codeCheck(key_code_from, key_code_to, kind_code);
+      this->callbacks[key_code_to][kind_code]
+        = this->callbacks[key_code_from][kind_code];
+      if (kind_code == KeyManager::Press) {
+        this->can_repeat[key_code_to] = this->can_repeat[key_code_from];
+      }
+    }
+    virtual void moveCallback(
+      usize const &key_code_from,
+      usize const &key_code_to,
+      usize const &kind_code
+    ) {
+      this->codeCheck(key_code_from, key_code_to, kind_code);
+      this->callbacks[key_code_to][kind_code]
+        = std::move(this->callbacks[key_code_from][kind_code]);
+      this->callbacks[key_code_from][kind_code] = Callback();
+      if (kind_code == KeyManager::Press) {
+        this->can_repeat[key_code_to] = this->can_repeat[key_code_from];
+        this->can_repeat[key_code_from] = bool();
+      }
+    }
+    virtual void swapCallback(
+      usize const &key_code_from,
+      usize const &key_code_to,
+      usize const &kind_code
+    ) {
+      this->codeCheck(key_code_from, key_code_to, kind_code);
+      Callback tmp = std::move(this->callbacks[key_code_to][kind_code]);
+      this->callbacks[key_code_to][kind_code]
+        = std::move(this->callbacks[key_code_from][kind_code]);
+      this->callbacks[key_code_from][kind_code]
+        = std::move(tmp);
+    }
+
+    virtual bool canRepeat(usize const &key_code) const {
+      this->codeCheck(key_code, usize(), usize());
       return this->can_repeat[key_code];
     }
 
-    virtual void setLink() { this->is_linked = true; }
-    virtual void setUnlink() { this->is_linked = false; }
+  protected:
+    friend class KeyManager;
+    virtual void link(KeyManager const *key_manager) { this->key_manager = key_manager; }
+    virtual void unlink() { this->key_manager = nullptr; }
+
+    virtual void codeCheck(
+      usize const &key_code_from,
+      usize const &key_code_to,
+      usize const &kind_code
+    ) const {
+      if (key_code_from >= this->getKeyCount()
+        || key_code_to >= this->getKeyCount()) {
+        throw std::runtime_error("No exist KeyCode.");
+      } else if (kind_code >= KeyManager::KindCount) {
+        throw std::runtime_error("No exist KindCode.");
+      }
+    }
 
   };
 
 private:
   std::vector<bool> key_state;
-  KeyMap *key_map;
+  KeyMap const *key_map;
 
 public:
   KeyManager() : key_map() {}
@@ -181,28 +255,28 @@ public:
     this->key_map = rhs.key_map;
     return *this;
   }
-  virtual ~KeyManager() {}
+  virtual ~KeyManager() {
+    if (this->key_map != nullptr) {
+      const_cast<KeyMap *>(this->key_map)->unlink();
+    }
+  }
 
   virtual void keyPress(usize const &key_code) {
-    if (key_code >= this->getKeyCount()) {
-      throw std::runtime_error("No exist KeyCode.");
-    }
+    if (key_code == usize(-1)) { return; }
+    this->codeCheck(key_code, usize(), usize());
     if (this->key_map != nullptr) {
       if (!this->key_state[key_code] || this->key_map->canRepeat(key_code)) {
-        std::function<void()> const &callback
-          = this->key_map->getCallback(key_code, KeyManager::Press);
+        Callback const &callback = this->key_map->getCallback(key_code, KeyManager::Press);
         if (callback) { callback(); }
       }
     }
     this->key_state[key_code] = true;
   }
   virtual void keyRelease(usize const &key_code) {
-    if (key_code >= this->getKeyCount()) {
-      throw std::runtime_error("No exist KeyCode.");
-    }
+    if (key_code == usize(-1)) { return; }
+    this->codeCheck(key_code, usize(), usize());
     if (this->key_map != nullptr) {
-      std::function<void()> const &callback
-        = this->key_map->getCallback(key_code, KeyManager::Release);
+      Callback const &callback = this->key_map->getCallback(key_code, KeyManager::Release);
       if (callback) { callback(); }
     }
     this->key_state[key_code] = false;
@@ -219,33 +293,56 @@ public:
   }
 
   virtual bool getKeyState(usize const &key_code) const {
-    if (key_code >= this->getKeyCount()) {
-      throw std::runtime_error("No exist KeyCode.");
-    }
+    this->codeCheck(key_code, usize(), usize());
     return this->key_state[key_code];
   }
 
-  virtual KeyMap const *const getKeyMap() const {
-    return this->key_map;
+  virtual KeyMap const &getKeyMap() const {
+    return *this->key_map;
   }
-  virtual void setKeyMap(KeyMap *key_map) {
-    if (key_map != nullptr && this->getKeyCount() != key_map->getKeyCount()) {
+  virtual void setKeyMap(KeyMap const &key_map) {
+    if (this->getKeyCount() != key_map.getKeyCount()) {
       throw std::runtime_error("KeyCount doesn't match.");
     }
-    if (this->key_map != nullptr) { this->key_map->setUnlink(); }
-    this->key_map = key_map;
-    if (this->key_map != nullptr) { this->key_map->setLink(); }
+    if (this->key_map != nullptr) {
+      const_cast<KeyMap *>(this->key_map)->unlink();
+    }
+    this->link(&key_map);
+    const_cast<KeyMap *>(this->key_map)->link(this);
+  }
+  virtual void clearKeyMap() {
+    if (this->key_map != nullptr) {
+      const_cast<KeyMap *>(this->key_map)->unlink();
+    }
+    this->unlink();
   }
 
   virtual void keyFramework() const {
     if (this->key_map != nullptr) {
-      std::vector<std::vector<std::function<void()>>> const &callbacks
-        = this->key_map->getCallbacks();
-      for (usize i = 0; i < callbacks.size(); ++i) {
+      CallbackStore const &callbacks = this->key_map->getCallbacks();
+      for (usize i = this->getKeyCount(); i--; ) {
         if (this->key_state[i] && callbacks[i][KeyManager::Pressed]) {
           callbacks[i][KeyManager::Pressed]();
         }
       }
+    }
+  }
+
+private:
+  friend KeyMap::~KeyMap();
+  virtual void link(KeyMap const *key_map) { this->key_map = key_map; }
+  virtual void unlink() { this->key_map = nullptr; }
+
+  virtual void codeCheck(
+    usize const &key_code_from,
+    usize const &key_code_to,
+    usize const &kind_code
+  ) const {
+    if (key_code_from >= this->getKeyCount()
+      || key_code_to >= this->getKeyCount()) {
+      throw std::runtime_error("No exist KeyCode.");
+    } else if (kind_code >= KeyManager::KindCount) {
+      throw std::runtime_error("No exist KindCode.");
     }
   }
 
