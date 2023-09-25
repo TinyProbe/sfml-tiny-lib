@@ -85,7 +85,7 @@ public:
       this->codeCheck(key_code, usize(-1), kind_code);
       std::pair<Callback, bool> tmp({
         std::move(this->callbacks[key_code][kind_code]),
-        bool()
+        bool(),
       });
       this->callbacks[key_code][kind_code] = Callback();
       if (kind_code == KeyManager::Press) {
@@ -230,10 +230,14 @@ public:
     return this->key_map;
   }
   virtual void setKeyMap(KeyMap const *const &key_map) {
-    if (this->key_map != nullptr) { const_cast<KeyMap *>(this->key_map)->unlink(); }
+    if (this->key_map != nullptr) {
+      const_cast<KeyMap *>(this->key_map)->unlink();
+    }
     this->link(key_map);
-    this->key_state.resize(key_map->getKeyCount());
-    if (this->key_map != nullptr) { const_cast<KeyMap *>(this->key_map)->link(this); }
+    if (this->key_map != nullptr) {
+      this->key_state.resize(key_map->getKeyCount());
+      const_cast<KeyMap *>(this->key_map)->link(this);
+    }
   }
   virtual void clearKeyMap() = delete;
   // virtual void clearKeyMap() {
