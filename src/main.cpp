@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/Music.hpp>
+#include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
 #include "common.hpp"
 
@@ -14,7 +15,7 @@ i32 main() {
   //   sf::Style::Fullscreen
   // );
   sf::RenderWindow window(
-    sf::VideoMode(WIDTH, HEIGHT),
+    sf::VideoMode({ WIDTH, HEIGHT }),
     "SFML!",
     sf::Style::Titlebar | sf::Style::Close // WindowMode default setting
   );
@@ -31,7 +32,7 @@ i32 main() {
   sf::Text txt1;
   txt1.setFont(fnt1);
   txt1.setStyle(sf::Text::Regular);
-  txt1.setFillColor(sf::Color(0, 255, 0));
+  txt1.setFillColor(sf::Color({ 0, 255, 0 }));
   txt1.setCharacterSize(16);
   txt1.setPosition(0, 0);
 
@@ -41,7 +42,7 @@ i32 main() {
     throw std::runtime_error("txr1 load failed!");
   }
   sf::RectangleShape rts1;
-  rts1.setSize(sf::Vector2f(WIDTH, HEIGHT));
+  rts1.setSize(sf::Vector2f({ WIDTH, HEIGHT }));
   rts1.setTexture(&txr1);
   rts1.setPosition(0, 0);
 
@@ -56,7 +57,7 @@ i32 main() {
     throw std::runtime_error("txr2 load failed!");
   }
   sf::RectangleShape rts2;
-  rts2.setSize(sf::Vector2f(100, 100));
+  rts2.setSize(sf::Vector2f({ 100, 100 }));
   rts2.setTexture(&txr2);
   rts2.setPosition(300, 300);
 
@@ -77,13 +78,52 @@ i32 main() {
   msc2.setVolume(100);
   msc2.setLoop(false);
 
-  // sprite ...
-
+  // sprite
+  sf::Texture txr3;
+  if (!txr3.loadFromFile("res/sprite/red_drake.png")) {
+    throw std::runtime_error("txr3 load failed!");
+  }
+  // enum Anime {
+  //   Idle,
+  //   Move,
+  //   AnimeCount,
+  // };
+  // Animation anm1;
+  // anm1.setAnimeCount(AnimeCount);
+  // anm1.setAnime(Idle, {
+  //   {
+  //     { 0, 0, 129, 83 },
+  //     sf::milliseconds(0),
+  //   },
+  // });
+  // anm1.setAnime(Move, {
+  //   {
+  //     { 0, 100, 133, 75 },
+  //     sf::milliseconds(100),
+  //   }, {
+  //     { 100, 100, 127, 82 },
+  //     sf::milliseconds(100),
+  //   }, {
+  //     { 200, 100, 124, 76 }
+  //     sf::milliseconds(100),
+  //   }, {
+  //     { 300, 100, 126, 82 }
+  //     sf::milliseconds(100),
+  //   },
+  // });
+  // // need class that inheritance for Sprite
+  // ExpSprite spr1;
+  // spr1.setTexture(txr3);
+  // spr1.setAnimation(anm1);
+  // spr1.setAnime(Move);
+  sf::Sprite spr1;
+  spr1.setTexture(txr3);
+  spr1.setTextureRect({ 0, 0, 100, 100 });
+  spr1.setPosition(100, 100);
 
   // key manager & key map
-  KeyManager keymng(sf::Keyboard::KeyCount);
   KeyManager::KeyMap keymap(sf::Keyboard::KeyCount);
-  keymng.setKeyMap(keymap);
+  KeyManager keymng(&keymap);
   keymap.setCallback(sf::Keyboard::Escape, KeyManager::Press, [&]() {
     window.close();
   });
@@ -114,20 +154,8 @@ i32 main() {
   keymap.setCallback(sf::Keyboard::Space, KeyManager::Press, [&]() {
     msc2.play();
   });
-  // keymap.moveCallback(sf::Keyboard::Hyphen, sf::Keyboard::Equal, KeyManager::Press);
-  // auto tmp = keymap.popCallback(sf::Keyboard::Space, KeyManager::Press);
-  // keymap.setCallback(sf::Keyboard::B, KeyManager::Press, tmp.first, tmp.second);
 
-  // duration output test
-  TimePointNano prev, now;
-  prev = fpsmng.getFrameTime();
-  keymap.setCallback(sf::Keyboard::Enter, KeyManager::Press, [&]() {
-    now = fpsmng.getFrameTime();
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(now - prev).count() << "ms\n";
-    prev = now;
-  });
-
-  auto event = sf::Event({});
+  sf::Event event;
   while (window.isOpen()) {
     fpsmng.framePulse();
     txt1.setString(std::to_string(fpsmng.getCurrentFPS()));
@@ -143,6 +171,7 @@ i32 main() {
     keymng.keyFramework();
     window.draw(rts1);
     window.draw(rts2);
+    window.draw(spr1);
     window.draw(txt1);
     window.display();
   }

@@ -1,16 +1,11 @@
-- Get current frame time in FPS Manager.
-OK
-
-- Convert "key_map" from none-constant to constant variable.
-OK
-
-- Is error occur if press undefined key.
-OK
-
-- Lib_part code refactory.
-OK
-
-- Change resource.
+- KeyManager & KeyMap change link interface.
 OK
 
 - Study sprite.
+...
+
+- Another module develop.
+  - Animation class.
+  OK
+  - ExtSprite class.
+  ...
