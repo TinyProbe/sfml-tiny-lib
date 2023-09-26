@@ -1,7 +1,3 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio/Music.hpp>
-#include <SFML/System/Clock.hpp>
-#include <SFML/System/Time.hpp>
 #include "common.hpp"
 
 i32 main() {
@@ -83,6 +79,17 @@ i32 main() {
   if (!txr3.loadFromFile("res/sprite/red_drake.png")) {
     throw std::runtime_error("txr3 load failed!");
   }
+  // [objects]           [resources]
+  //             Image + Texture
+  // Drawable -> { ImageTexture} + Animation
+  // Sprite   -> {      SpriteTexture      }  // need Sprite2??
+  // => std::vector<ImageTexture>[IMAGE_CODE] => link to object
+  // => std::vector<SpriteTexture>[SPRITE_CODE] => link to object
+  //
+  // Image list : backgrounds(structured by some layers), sculptures, terrains, 
+  //   interface, mobs, npcs, players, effects,
+  // Texture list : same to Image
+  // rendering order : depth based sort(z axis)
   // enum Anime {
   //   Idle,
   //   Move,
@@ -111,11 +118,6 @@ i32 main() {
   //     sf::milliseconds(100),
   //   },
   // });
-  // // need class that inheritance for Sprite
-  // ExpSprite spr1;
-  // spr1.setTexture(txr3);
-  // spr1.setAnimation(anm1);
-  // spr1.setAnime(Move);
   sf::Sprite spr1;
   spr1.setTexture(txr3);
   spr1.setTextureRect({ 0, 0, 100, 100 });
@@ -157,8 +159,10 @@ i32 main() {
 
   sf::Event event;
   while (window.isOpen()) {
+    // fps managing
     fpsmng.framePulse();
-    txt1.setString(std::to_string(fpsmng.getCurrentFPS()));
+
+    // update
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
         window.close();
@@ -169,6 +173,9 @@ i32 main() {
       }
     }
     keymng.keyFramework();
+    txt1.setString(std::to_string(fpsmng.getCurrentFPS()));
+
+    // render
     window.draw(rts1);
     window.draw(rts2);
     window.draw(spr1);

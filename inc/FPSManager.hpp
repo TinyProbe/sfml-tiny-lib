@@ -56,7 +56,7 @@ public:
   }
   virtual void framePulse() {
     sf::Time now = clock.getElapsedTime();
-    sf::Time diff = now - time_per_frame.back();
+    sf::Time diff = now - this->time_per_frame.back();
     if (this->term > diff) {
       diff = this->term - diff;
       std::this_thread::sleep_for(DurationNano(u64(diff.asMicroseconds()) * 1000));

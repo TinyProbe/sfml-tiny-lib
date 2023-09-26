@@ -1,11 +1,14 @@
 - KeyManager & KeyMap change link interface.
 OK
 
+- FPSManager optimize.
+OK
+
 - Study sprite.
 ...
 
 - Another module develop.
-  - Animation class.
+  - Animation.
   OK
-  - ExtSprite class.
+  - ImageTexture & SpriteTexture.
   ...

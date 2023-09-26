@@ -11,9 +11,17 @@
 #include <iostream>
 #include <cmath>
 
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio/Music.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
+
+// #include "ScrManager.hpp"
 #include "FPSManager.hpp"
 #include "KeyManager.hpp"
 #include "Animation.hpp"
+// #include "ImageTexture.hpp"
+// #include "SpriteTexture.hpp"
 
 using i8 = char;
 using i16 = short;

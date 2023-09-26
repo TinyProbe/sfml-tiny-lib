@@ -11,7 +11,14 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(sfml src/main.cpp)
-target_link_libraries(sfml PRIVATE sfml-graphics PRIVATE sfml-system PRIVATE sfml-audio PRIVATE sfml-network)
+target_link_libraries(sfml
+  PRIVATE sfml-graphics
+  PRIVATE sfml-system
+  PRIVATE sfml-audio
+  PRIVATE sfml-network
+  # "-framework CoreGraphics"
+  # "-framework Foundation"
+)
 target_compile_features(sfml PRIVATE cxx_std_17)
 
 if(WIN32)
