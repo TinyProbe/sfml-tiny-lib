@@ -74,7 +74,7 @@ public:
     ) {
       this->codeCheck(key_code, usize(-1), kind_code);
       this->callbacks[key_code][kind_code] = std::move(callback);
-      if (kind_code == Press) {
+      if (kind_code == KeyManager::Press) {
         this->can_repeat[key_code] = can_repeat;
       }
     }

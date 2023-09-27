@@ -28,33 +28,25 @@ i32 main() {
   sf::Text txt1;
   txt1.setFont(fnt1);
   txt1.setStyle(sf::Text::Regular);
-  txt1.setFillColor(sf::Color({ 0, 255, 0 }));
+  txt1.setFillColor(sf::Color({ 255, 0, 0 }));
   txt1.setCharacterSize(16);
   txt1.setPosition(0, 0);
 
   // background
-  sf::Texture txr1;
-  if (!txr1.loadFromFile("res/background/ereve.jpg")) {
-    throw std::runtime_error("txr1 load failed!");
-  }
+  ImageTexture itxr2;
+  itxr2.loadFromFile("res/background/ereve.jpg");
   sf::RectangleShape rts1;
   rts1.setSize(sf::Vector2f({ WIDTH, HEIGHT }));
-  rts1.setTexture(&txr1);
+  rts1.setTexture(&itxr2.getTexture());
   rts1.setPosition(0, 0);
 
   // monster
-  sf::Image img1;
-  if (!img1.loadFromFile("res/Monsters/TrollDark.PNG")) {
-    throw std::runtime_error("img1 load failed!");
-  }
-  img1.createMaskFromColor(img1.getPixel(0, 0)); // image background to invisible
-  sf::Texture txr2;
-  if (!txr2.loadFromImage(img1)) {
-    throw std::runtime_error("txr2 load failed!");
-  }
+  ImageTexture itxr1;
+  itxr1.loadFromFile("res/Monsters/TrollDark.PNG");
+  itxr1.createMaskFromColor(itxr1.getPixel(0, 0)); // image background to invisible
   sf::RectangleShape rts2;
   rts2.setSize(sf::Vector2f({ 100, 100 }));
-  rts2.setTexture(&txr2);
+  rts2.setTexture(&itxr1.getTexture());
   rts2.setPosition(300, 300);
 
   // background music
@@ -74,94 +66,89 @@ i32 main() {
   msc2.setVolume(100);
   msc2.setLoop(false);
 
-  // sprite
-  sf::Texture txr3;
-  if (!txr3.loadFromFile("res/sprite/red_drake.png")) {
-    throw std::runtime_error("txr3 load failed!");
-  }
   // [objects]           [resources]
   //             Image + Texture
   // Drawable -> { ImageTexture} + Animation
   // Sprite   -> {      SpriteTexture      }  // need Sprite2??
-  // => std::vector<ImageTexture>[IMAGE_CODE] => link to object
-  // => std::vector<SpriteTexture>[SPRITE_CODE] => link to object
+  // => std::vector<ImageTexture>[IMAGE_CODE] => link to objects
+  // => std::vector<SpriteTexture>[SPRITE_CODE] => link to objects
   //
-  // Image list : backgrounds(structured by some layers), sculptures, terrains, 
-  //   interface, mobs, npcs, players, effects,
+  // Image list : backgrounds(layered), sculptures, terrains, interfaces, mobs,
+  // npcs, players, effects,
   // Texture list : same to Image
-  // rendering order : depth based sort(z axis)
-  // enum Anime {
-  //   Idle,
-  //   Move,
-  //   AnimeCount,
-  // };
-  // Animation anm1;
-  // anm1.setAnimeCount(AnimeCount);
-  // anm1.setAnime(Idle, {
-  //   {
-  //     { 0, 0, 129, 83 },
-  //     sf::milliseconds(0),
-  //   },
-  // });
-  // anm1.setAnime(Move, {
-  //   {
-  //     { 0, 100, 133, 75 },
-  //     sf::milliseconds(100),
-  //   }, {
-  //     { 100, 100, 127, 82 },
-  //     sf::milliseconds(100),
-  //   }, {
-  //     { 200, 100, 124, 76 }
-  //     sf::milliseconds(100),
-  //   }, {
-  //     { 300, 100, 126, 82 }
-  //     sf::milliseconds(100),
-  //   },
-  // });
-  sf::Sprite spr1;
-  spr1.setTexture(txr3);
-  spr1.setTextureRect({ 0, 0, 100, 100 });
-  spr1.setPosition(100, 100);
+  // rendering order : order by z depth
+
+  // sprite
+  enum Anime {
+    Idle,
+    Move,
+    AnimeCount,
+  };
+  SpriteTexture stxr1;
+  stxr1.loadFromFile("res/sprite/red_drake.png");
+  stxr1.setAnimeCount(AnimeCount);
+  stxr1.setAnime(Idle, {
+    {
+      { 3, 5, 129, 83 }, sf::milliseconds(0),
+    },
+  });
+  stxr1.setAnime(Move, {
+    {
+      { 4, 113, 133, 75 }, sf::milliseconds(300),
+    }, {
+      { 149, 113, 127, 82 }, sf::milliseconds(300),
+    }, {
+      { 289, 113, 124, 76 }, sf::milliseconds(300),
+    }, {
+      { 430, 113, 126, 82 }, sf::milliseconds(300),
+    },
+  });
+  AutoSprite aspr1;
+  aspr1.setSpriteTexture(&stxr1);
+  aspr1.setCurrentAnime(Idle);
+  aspr1.setPosition(400, 578); // left, top pointing is sometimes unmatchable floor position.
+
+  AutoSprite aspr2;
+  aspr2.setSpriteTexture(&stxr1);
+  aspr2.setCurrentAnime(Move);
+  aspr2.setPosition(550, 584);
 
   // key manager & key map
-  KeyManager::KeyMap keymap(sf::Keyboard::KeyCount);
-  KeyManager keymng(&keymap);
-  keymap.setCallback(sf::Keyboard::Escape, KeyManager::Press, [&]() {
+  KeyManager::KeyMap km(sf::Keyboard::KeyCount);
+  KeyManager keymng(&km);
+  km.setCallback(sf::Keyboard::Escape, KeyManager::Press, [&]() {
     window.close();
   });
-  keymap.setCallback(sf::Keyboard::Up, KeyManager::Pressed, [&]() {
+  km.setCallback(sf::Keyboard::Up, KeyManager::Pressed, [&]() {
     rts2.move(0, -MOVE_UNIT);
   });
-  keymap.setCallback(sf::Keyboard::Down, KeyManager::Pressed, [&]() {
+  km.setCallback(sf::Keyboard::Down, KeyManager::Pressed, [&]() {
     rts2.move(0, MOVE_UNIT);
   });
-  keymap.setCallback(sf::Keyboard::Left, KeyManager::Pressed, [&]() {
+  km.setCallback(sf::Keyboard::Left, KeyManager::Pressed, [&]() {
     rts2.move(-MOVE_UNIT, 0);
   });
-  keymap.setCallback(sf::Keyboard::Right, KeyManager::Pressed, [&]() {
+  km.setCallback(sf::Keyboard::Right, KeyManager::Pressed, [&]() {
     rts2.move(MOVE_UNIT, 0);
   });
-  keymap.setCallback(sf::Keyboard::Hyphen, KeyManager::Press, [&]() {
+  km.setCallback(sf::Keyboard::Hyphen, KeyManager::Press, [&]() {
     msc1.setVolume(fmax(msc1.getVolume() - 3, 0));
   }, true);
-  keymap.setCallback(sf::Keyboard::Equal, KeyManager::Press, [&]() {
+  km.setCallback(sf::Keyboard::Equal, KeyManager::Press, [&]() {
     msc1.setVolume(fmin(msc1.getVolume() + 3, 100));
   }, true);
-  keymap.setCallback(sf::Keyboard::LBracket, KeyManager::Press, [&]() {
+  km.setCallback(sf::Keyboard::LBracket, KeyManager::Press, [&]() {
     msc1.setPlayingOffset(msc1.getPlayingOffset() - sf::seconds(2));
   }, true);
-  keymap.setCallback(sf::Keyboard::RBracket, KeyManager::Press, [&]() {
+  km.setCallback(sf::Keyboard::RBracket, KeyManager::Press, [&]() {
     msc1.setPlayingOffset(msc1.getPlayingOffset() + sf::seconds(2));
   }, true);
-  keymap.setCallback(sf::Keyboard::Space, KeyManager::Press, [&]() {
+  km.setCallback(sf::Keyboard::Space, KeyManager::Press, [&]() {
     msc2.play();
   });
 
   sf::Event event;
   while (window.isOpen()) {
-    // fps managing
-    fpsmng.framePulse();
-
     // update
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
@@ -178,8 +165,12 @@ i32 main() {
     // render
     window.draw(rts1);
     window.draw(rts2);
-    window.draw(spr1);
     window.draw(txt1);
+    window.draw(aspr1);
+    window.draw(aspr2);
     window.display();
+
+    // fps managing
+    fpsmng.framePulse();
   }
 }

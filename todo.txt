@@ -2,13 +2,19 @@
 OK
 
 - FPSManager optimize.
-OK
+OK, one more OK
 
 - Study sprite.
-...
+OK
 
 - Another module develop.
   - Animation.
   OK
   - ImageTexture & SpriteTexture.
-  ...
+  OK
+  - AutoSprite.
+  OK
+
+- Object.
+
+- Physics engine.
