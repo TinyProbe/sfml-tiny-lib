@@ -41,8 +41,11 @@ public:
     this->codeCheck(anime_code, usize(-1));
     this->animes[anime_code].resize(motion_count);
   }
-  virtual AnimeStore const &getAnimeStore() const {
+  virtual AnimeStore const &getAnimes() const {
     return this->animes;
+  }
+  virtual void setAnimes(AnimeStore animes) {
+    this->animes = std::move(animes);
   }
   virtual Anime const &getAnime(usize const &anime_code) const {
     this->codeCheck(anime_code, usize(-1));

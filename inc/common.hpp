@@ -16,10 +16,8 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
 
-// #include "ScrManager.hpp"
 #include "FPSManager.hpp"
 #include "KeyManager.hpp"
-// #include "Animation.hpp"
 #include "ImageTexture.hpp"
 #include "SpriteTexture.hpp"
 #include "AutoSprite.hpp"
@@ -36,5 +34,9 @@ using u64 = unsigned long long;
 using usize = unsigned long;
 using f32 = float;
 using f64 = double;
+
+u64 getDigitLength(u64 const &n) {
+  return log10(n) + 1;
+}
 
 #endif

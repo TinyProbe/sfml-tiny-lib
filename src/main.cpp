@@ -18,7 +18,7 @@ i32 main() {
 
   // fps manager
   FPSManager fpsmng;
-  fpsmng.setFramerateLimit(60);
+  fpsmng.setFramerateLimit(120);
 
   // fps counter
   sf::Font fnt1;
@@ -37,7 +37,7 @@ i32 main() {
   itxr2.loadFromFile("res/background/ereve.jpg");
   sf::RectangleShape rts1;
   rts1.setSize(sf::Vector2f({ WIDTH, HEIGHT }));
-  rts1.setTexture(&itxr2.getTexture());
+  rts1.setTexture(itxr2);
   rts1.setPosition(0, 0);
 
   // monster
@@ -46,7 +46,7 @@ i32 main() {
   itxr1.createMaskFromColor(itxr1.getPixel(0, 0)); // image background to invisible
   sf::RectangleShape rts2;
   rts2.setSize(sf::Vector2f({ 100, 100 }));
-  rts2.setTexture(&itxr1.getTexture());
+  rts2.setTexture(itxr1);
   rts2.setPosition(300, 300);
 
   // background music
@@ -73,7 +73,7 @@ i32 main() {
   // => std::vector<ImageTexture>[IMAGE_CODE] => link to objects
   // => std::vector<SpriteTexture>[SPRITE_CODE] => link to objects
   //
-  // Image list : backgrounds(layered), sculptures, terrains, interfaces, mobs,
+  // Image list : backgrounds, sculptures, terrains, interfaces, mobs,
   // npcs, players, effects,
   // Texture list : same to Image
   // rendering order : order by z depth
@@ -88,34 +88,28 @@ i32 main() {
   stxr1.loadFromFile("res/sprite/red_drake.png");
   stxr1.setAnimeCount(AnimeCount);
   stxr1.setAnime(Idle, {
-    {
-      { 3, 5, 129, 83 }, sf::milliseconds(0),
-    },
+    { { 3, 5, 129, 83 }, sf::milliseconds(0), },
   });
   stxr1.setAnime(Move, {
-    {
-      { 4, 113, 133, 75 }, sf::milliseconds(300),
-    }, {
-      { 149, 113, 127, 82 }, sf::milliseconds(300),
-    }, {
-      { 289, 113, 124, 76 }, sf::milliseconds(300),
-    }, {
-      { 430, 113, 126, 82 }, sf::milliseconds(300),
-    },
+    { { 4, 113, 133, 75 }, sf::milliseconds(300), },
+    { { 149, 113, 127, 82 }, sf::milliseconds(300), },
+    { { 289, 113, 124, 76 }, sf::milliseconds(300), },
+    { { 430, 113, 126, 82 }, sf::milliseconds(300), },
   });
   AutoSprite aspr1;
-  aspr1.setSpriteTexture(&stxr1);
+  aspr1.setSpriteTexture(stxr1);
   aspr1.setCurrentAnime(Idle);
   aspr1.setPosition(400, 578); // left, top pointing is sometimes unmatchable floor position.
 
   AutoSprite aspr2;
-  aspr2.setSpriteTexture(&stxr1);
+  aspr2.setSpriteTexture(stxr1);
   aspr2.setCurrentAnime(Move);
   aspr2.setPosition(550, 584);
+  aspr2.setColor(sf::Color(200, 200, 255, 180)); // activate colorate.
 
   // key manager & key map
   KeyManager::KeyMap km(sf::Keyboard::KeyCount);
-  KeyManager keymng(&km);
+  KeyManager keymng(km);
   km.setCallback(sf::Keyboard::Escape, KeyManager::Press, [&]() {
     window.close();
   });

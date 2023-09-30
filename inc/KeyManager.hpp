@@ -45,6 +45,8 @@ public:
       }
     }
 
+    virtual operator KeyMap const *() const { return this; }
+
     virtual usize getKeyCount() const {
       return this->callbacks.size();
     }

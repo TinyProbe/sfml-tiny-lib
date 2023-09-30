@@ -21,6 +21,8 @@ public:
   }
   virtual ~SpriteTexture() {}
 
+  virtual operator SpriteTexture const *() const { return this; }
+
 };
 
 #endif

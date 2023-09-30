@@ -21,14 +21,16 @@ public:
   ImageTexture(ImageTexture const &rhs) { *this = rhs; }
   virtual ImageTexture &operator=(ImageTexture const &rhs) {
     if (this == &rhs) { return *this; }
-    this->image = rhs.texture.copyToImage();
+    this->image = rhs.image; // copy? or move?
     this->texture = rhs.texture;
     return *this;
   }
   virtual ~ImageTexture() {}
 
-  virtual sf::Image const &getImage() const { return this->image; }
-  virtual sf::Texture const &getTexture() const { return this->texture; }
+  virtual operator sf::Image const &() const { return this->image; }
+  virtual operator sf::Texture const &() const { return this->texture; }
+  virtual operator sf::Image const *() const { return &(this->image); }
+  virtual operator sf::Texture const *() const { return &(this->texture); }
 
   virtual void create(
     usize const &width,
@@ -179,7 +181,7 @@ private:
   virtual void loadFromImage() {
     sf::Vector2u size = this->image.getSize();
     if (!this->texture.loadFromImage(this->image, { 0, 0, i32(size.x), i32(size.y) })) {
-      throw std::runtime_error("texture load failed");
+      throw std::runtime_error("ImageTexture load failed");
     }
   }
 

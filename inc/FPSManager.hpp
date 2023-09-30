@@ -69,11 +69,6 @@ public:
     this->add = now;
     this->target = now;
   }
-  virtual u64 const &getTerm() const { return this->term; }
-  virtual u64 const &getRemain() const { return this->remain; }
-  virtual u64 const &getFrameratePerAdd() const { return this->add_per_frame; }
-  virtual u64 const &getAdd() const { return this->add; }
-  virtual u64 const &getTarget() const { return this->target; }
 
   virtual void framePulse() {
     this->add += this->add_per_frame;

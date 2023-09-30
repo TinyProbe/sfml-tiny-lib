@@ -20,37 +20,50 @@ class AutoSprite {
 
 public:
   AutoSprite() :
-    current_anime(-1),
-    current_motion(-1),
+    current_anime(),
+    current_motion(),
     sprite_texture()
   {}
   AutoSprite(SpriteTexture const *const &sprite_texture) :
-    current_anime(-1),
-    current_motion(-1),
+    current_anime(),
+    current_motion(),
     sprite_texture(sprite_texture)
   {
-    this->sprite.setTexture(this->sprite_texture->getTexture());
+    if (sprite_texture != nullptr) {
+      this->sprite.setTexture(*sprite_texture);
+    }
   }
   AutoSprite(AutoSprite const &rhs) { *this = rhs; }
   virtual AutoSprite &operator=(AutoSprite const &rhs) {
     if (this == &rhs) { return *this; }
     this->clock = rhs.clock;
     this->sprite = rhs.sprite;
+    this->current_anime = rhs.current_anime;
+    this->current_motion = rhs.current_motion;
     this->sprite_texture = rhs.sprite_texture;
     return *this;
   }
   virtual ~AutoSprite() {}
 
   virtual operator sf::Sprite const &() {
-    Anime const &anime = this->sprite_texture->getAnime(this->current_anime);
-    Motion const &motion = anime[this->current_motion];
-    if (motion.second.asMilliseconds() != 0
-      && this->clock.getElapsedTime() >= motion.second)
-    {
-      this->clock.restart();
-      this->current_motion += 1;
-      this->current_motion %= anime.size();
-      this->setTextureRect(motion.first);
+    if (this->sprite_texture != nullptr) {
+      AnimeStore const &animes = this->sprite_texture->getAnimes();
+      if (this->current_anime >= animes.size()) {
+        throw std::runtime_error("No exist current anime in animes.");
+      }
+      Anime const &anime = animes[this->current_anime];
+      if (this->current_motion >= anime.size()) {
+        throw std::runtime_error("No exist current motion in anime.");
+      }
+      Motion const &motion = anime[this->current_motion];
+      if (motion.second.asMilliseconds() != 0
+        && this->clock.getElapsedTime() >= motion.second)
+      {
+        this->clock.restart();
+        this->current_motion += 1;
+        this->current_motion %= anime.size();
+        this->sprite.setTextureRect(motion.first);
+      }
     }
     return this->sprite;
   }
@@ -60,29 +73,42 @@ public:
   }
   virtual void setSpriteTexture(SpriteTexture const *const &sprite_texture) {
     this->sprite_texture = sprite_texture;
-    this->sprite.setTexture(sprite_texture->getTexture());
+    if (sprite_texture != nullptr) {
+      this->sprite.setTexture(*sprite_texture);
+    } else {
+      this->sprite = sf::Sprite();
+    }
   }
   virtual usize const &getCurrentAnime() const {
     return this->current_anime;
   }
   virtual void setCurrentAnime(usize const &anime_code) {
-    Anime const &anime = this->sprite_texture->getAnime(anime_code);
+    if (this->sprite_texture == nullptr) {
+      throw std::runtime_error("Nothing set a SpriteTexture.");
+    }
     this->clock.restart();
     this->current_anime = anime_code;
     this->current_motion = 0;
-    this->setTextureRect(anime[this->current_motion].first);
+    Motion const &motion = this->sprite_texture->getMotion(
+      this->current_anime,
+      this->current_motion
+    );
+    this->sprite.setTextureRect(motion.first);
   }
   virtual usize const &getCurrentMotion() const {
     return this->current_motion;
   }
   virtual void setCurrentMotion(usize const &motion_code) {
-    Anime const &anime = this->sprite_texture->getAnime(this->current_anime);
-    if (motion_code >= anime.size()) {
-      throw std::runtime_error("No exist MotionCode");
+    if (this->sprite_texture == nullptr) {
+      throw std::runtime_error("Nothing set a SpriteTexture.");
     }
     this->clock.restart();
     this->current_motion = motion_code;
-    this->setTextureRect(anime[motion_code].first);
+    Motion const &motion = this->sprite_texture->getMotion(
+      this->current_anime,
+      this->current_motion
+    );
+    this->sprite.setTextureRect(motion.first);
   }
 
   virtual void setColor(sf::Color const &color) {
@@ -150,11 +176,6 @@ public:
   }
   virtual sf::Transform const &getInverseTransform() const {
     return this->sprite.getInverseTransform();
-  }
-
-private:
-  virtual void setTextureRect(sf::IntRect const &int_rect) {
-    this->sprite.setTextureRect(int_rect);
   }
 
 };

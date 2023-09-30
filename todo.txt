@@ -14,7 +14,56 @@ OK
   OK
   - AutoSprite.
   OK
+  - AutoSprite check if some bug.
+  OK
+  - Object.
+  ...
+    - BackGround.
+    - Sculpture.
+    - Terrain.
+    - Interface.
+    - Mob.
+    - NPC.
+    - Player.
+    - Effect.
+  - Physics engine.
 
-- Object.
 
-- Physics engine.
+
+flow chart:
+  ->: other focus,
+  {}: multiple element,
+
+execute program
+-> show logo
+-> main menu {
+  start {
+    create character -> {
+      create,
+      cancel,
+    } -> start,
+    select character
+    -> select session {
+      private(solo),
+      protect(invite),
+      public(random),
+    } -> in game {
+      ...,
+      quit -> main menu,
+    },
+  },
+  select server {
+    select { apply, },
+    quit -> main menu,
+  },
+  options {
+    game { ...,},
+    display { ..., },
+    sound { ..., },
+    ...,
+    quit -> main menu,
+  },
+  gallery { ..., },
+  credits { ..., },
+  quit -> exit program
+}
