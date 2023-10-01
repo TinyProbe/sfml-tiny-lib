@@ -49,6 +49,24 @@ i32 main() {
   rts2.setTexture(itxr1);
   rts2.setPosition(300, 300);
 
+  // test
+  // ImageTexture itex1, itex2;
+  // sf::RenderTexture rtex1;
+  // sf::RectangleShape rts3;
+  // itex1.loadFromFile("res/Monsters/WormWhite.PNG");
+  // itex2.loadFromFile("res/Monsters/YetiGreen.PNG");
+  // itex1.createMaskFromColor(itex1.getPixel(0, 0));
+  // itex2.createMaskFromColor(itex2.getPixel(0, 0));
+  // rtex1.create(500, 500);
+  // rts3.setPosition(0, 0);
+  // rts3.setSize(sf::Vector2f({ 200, 200 }));
+  // rts3.setTexture(itex1);
+  // rtex1.draw(rts3);
+  // rts3.setTexture(itex2);
+  // rtex1.draw(rts3);
+  // rts3.setTexture(&rtex1.getTexture());
+  // rts3.setPosition(500, 200);
+
   // background music
   sf::Music msc1;
   if (!msc1.openFromFile("res/sound/ereve.mp3")) {
@@ -105,7 +123,7 @@ i32 main() {
   aspr2.setSpriteTexture(stxr1);
   aspr2.setCurrentAnime(Move);
   aspr2.setPosition(550, 584);
-  aspr2.setColor(sf::Color(200, 200, 255, 180)); // activate colorate.
+  aspr2.setColor(sf::Color(200, 200, 255, 180)); // apply colorate.
 
   // key manager & key map
   KeyManager::KeyMap km(sf::Keyboard::KeyCount);
@@ -159,9 +177,10 @@ i32 main() {
     // render
     window.draw(rts1);
     window.draw(rts2);
-    window.draw(txt1);
+    // window.draw(rts3);
     window.draw(aspr1);
     window.draw(aspr2);
+    window.draw(txt1);
     window.display();
 
     // fps managing

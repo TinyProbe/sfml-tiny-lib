@@ -16,6 +16,8 @@ OK
   OK
   - AutoSprite check if some bug.
   OK
+  - SpriteTextureMulti & AutoSpriteMulti.
+  ... ???
   - Object.
   ...
     - BackGround.

@@ -18,6 +18,24 @@ class ImageTexture {
 
 public:
   ImageTexture() {}
+  ImageTexture(std::string const &filename) {
+    if (!this->image.loadFromFile(filename)) {
+      throw std::runtime_error(std::string("load from file failed: ") + filename);
+    }
+    this->loadFromImage();
+  }
+  ImageTexture(void const *data, std::size_t size) {
+    if (!this->image.loadFromMemory(data, size)) {
+      throw std::runtime_error("load from memory failed");
+    }
+    this->loadFromImage();
+  }
+  ImageTexture(sf::InputStream &stream) {
+    if (!this->image.loadFromStream(stream)) {
+      throw std::runtime_error("load from stream failed");
+    }
+    this->loadFromImage();
+  }
   ImageTexture(ImageTexture const &rhs) { *this = rhs; }
   virtual ImageTexture &operator=(ImageTexture const &rhs) {
     if (this == &rhs) { return *this; }
