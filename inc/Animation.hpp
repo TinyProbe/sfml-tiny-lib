@@ -34,11 +34,11 @@ public:
     this->animes.resize(anime_count);
   }
   virtual usize getMotionCount(usize const &anime_code) const {
-    this->codeCheck(anime_code, usize(-1));
+    this->codeCheck(anime_code);
     return this->animes[anime_code].size();
   }
   virtual void setMotionCount(usize const &anime_code, usize const &motion_count) {
-    this->codeCheck(anime_code, usize(-1));
+    this->codeCheck(anime_code);
     this->animes[anime_code].resize(motion_count);
   }
   virtual AnimeStore const &getAnimes() const {
@@ -48,11 +48,11 @@ public:
     this->animes = std::move(animes);
   }
   virtual Anime const &getAnime(usize const &anime_code) const {
-    this->codeCheck(anime_code, usize(-1));
+    this->codeCheck(anime_code);
     return this->animes[anime_code];
   }
   virtual void setAnime(usize const &anime_code, Anime anime) {
-    this->codeCheck(anime_code, usize(-1));
+    this->codeCheck(anime_code);
     this->animes[anime_code] = std::move(anime);
   }
   virtual Motion const &getMotion(
@@ -65,22 +65,22 @@ public:
   virtual void setMotion(
     usize const &anime_code,
     usize const &motion_code,
-    Motion motion
+    Motion const &motion
   ) {
     this->codeCheck(anime_code, motion_code);
-    this->animes[anime_code][motion_code] = std::move(motion);
+    this->animes[anime_code][motion_code] = motion;
   }
 
 private:
   virtual void codeCheck(
     usize const &anime_code,
-    usize const &motion_code
+    usize const &motion_code = -1
   ) const {
     if (anime_code != usize(-1) && anime_code >= this->getAnimeCount()) {
-      throw std::runtime_error("No exist AnimeCode.");
+      throw std::runtime_error("No exist anime_code.");
     } 
     if (motion_code != usize(-1) && motion_code >= this->getMotionCount(anime_code)) {
-      throw std::runtime_error("No exist MotionCode.");
+      throw std::runtime_error("No exist motion_code.");
     }
   }
 

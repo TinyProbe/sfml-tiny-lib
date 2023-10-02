@@ -22,24 +22,21 @@ public:
     if (!this->image.loadFromFile(filename)) {
       throw std::runtime_error(std::string("load from file failed: ") + filename);
     }
-    this->loadFromImage();
   }
   ImageTexture(void const *data, std::size_t size) {
     if (!this->image.loadFromMemory(data, size)) {
       throw std::runtime_error("load from memory failed");
     }
-    this->loadFromImage();
   }
   ImageTexture(sf::InputStream &stream) {
     if (!this->image.loadFromStream(stream)) {
       throw std::runtime_error("load from stream failed");
     }
-    this->loadFromImage();
   }
   ImageTexture(ImageTexture const &rhs) { *this = rhs; }
   virtual ImageTexture &operator=(ImageTexture const &rhs) {
     if (this == &rhs) { return *this; }
-    this->image = rhs.image; // copy? or move?
+    this->image = rhs.image;
     this->texture = rhs.texture;
     return *this;
   }
@@ -50,13 +47,18 @@ public:
   virtual operator sf::Image const *() const { return &(this->image); }
   virtual operator sf::Texture const *() const { return &(this->texture); }
 
+  virtual void loadFromImage() {
+    sf::Vector2u size = this->image.getSize();
+    if (!this->texture.loadFromImage(this->image, { 0, 0, i32(size.x), i32(size.y) })) {
+      throw std::runtime_error("ImageTexture load failed");
+    }
+  }
   virtual void create(
     usize const &width,
     usize const &height,
     sf::Color const &color = sf::Color(0, 0, 0)
   ) {
     this->image.create(width, height, color);
-    this->loadFromImage();
   }
   virtual void create(
     usize const &width,
@@ -64,25 +66,21 @@ public:
     sf::Uint8 const *pixels
   ) {
     this->image.create(width, height, pixels);
-    this->loadFromImage();
   }
   virtual void loadFromFile(std::string const &filename) {
     if (!this->image.loadFromFile(filename)) {
       throw std::runtime_error(std::string("load from file failed: ") + filename);
     }
-    this->loadFromImage();
   }
   virtual void loadFromMemory(void const *data, std::size_t size) {
     if (!this->image.loadFromMemory(data, size)) {
       throw std::runtime_error("load from memory failed");
     }
-    this->loadFromImage();
   }
   virtual void loadFromStream(sf::InputStream &stream) {
     if (!this->image.loadFromStream(stream)) {
       throw std::runtime_error("load from stream failed");
     }
-    this->loadFromImage();
   }
   virtual void saveToFile(std::string const &filename) const {
     if (!this->image.saveToFile(filename)) {
@@ -105,24 +103,23 @@ public:
   }
   virtual void createMaskFromColor(sf::Color const &color, sf::Uint8 alpha = 0) {
     this->image.createMaskFromColor(color, alpha);
-    this->loadFromImage();
   }
   virtual void copy(
     sf::Image const &source,
-    u32 destX,
-    u32 destY,
+    u32 destX = 0,
+    u32 destY = 0,
     sf::IntRect const &sourceRect = sf::IntRect(0, 0, 0, 0),
     bool applyAlpha = false
   ) {
+    sf::Vector2u size = source.getSize();
+    this->image.create(size.x, size.y, sf::Color::Black);
     this->image.copy(source, destX, destY, sourceRect, applyAlpha);
-    this->loadFromImage();
   }
   virtual sf::Image copyToImage() const {
     return std::move(this->texture.copyToImage());
   }
   virtual void setPixel(u32 x, u32 y, sf::Color const &color) {
     this->image.setPixel(x, y, color);
-    this->loadFromImage();
   }
   virtual sf::Color getPixel(u32 x, u32 y) const {
     return this->image.getPixel(x, y);
@@ -132,11 +129,9 @@ public:
   }
   virtual void flipHorizontally() {
     this->image.flipHorizontally();
-    this->loadFromImage();
   }
   virtual void flipVertically() {
     this->image.flipVertically();
-    this->loadFromImage();
   }
   virtual void update(sf::Uint8 const *pixels) {
     this->texture.update(pixels);
@@ -193,14 +188,6 @@ public:
   }
   virtual u32 getNativeHandle() const {
     return this->texture.getNativeHandle();
-  }
-
-private:
-  virtual void loadFromImage() {
-    sf::Vector2u size = this->image.getSize();
-    if (!this->texture.loadFromImage(this->image, { 0, 0, i32(size.x), i32(size.y) })) {
-      throw std::runtime_error("ImageTexture load failed");
-    }
   }
 
 };

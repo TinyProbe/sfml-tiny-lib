@@ -49,11 +49,11 @@ public:
     if (this->sprite_texture != nullptr) {
       AnimeStore const &animes = this->sprite_texture->getAnimes();
       if (this->current_anime >= animes.size()) {
-        throw std::runtime_error("No exist current anime in animes.");
+        throw std::runtime_error("No exist current_anime in animes.");
       }
       Anime const &anime = animes[this->current_anime];
       if (this->current_motion >= anime.size()) {
-        throw std::runtime_error("No exist current motion in anime.");
+        throw std::runtime_error("No exist current_motion in anime.");
       }
       Motion const &motion = anime[this->current_motion];
       if (motion.second.asMilliseconds() != 0

@@ -35,6 +35,7 @@ i32 main() {
   // background
   ImageTexture itxr2;
   itxr2.loadFromFile("res/background/ereve.jpg");
+  itxr2.loadFromImage();
   sf::RectangleShape rts1;
   rts1.setSize(sf::Vector2f({ WIDTH, HEIGHT }));
   rts1.setTexture(itxr2);
@@ -44,28 +45,33 @@ i32 main() {
   ImageTexture itxr1;
   itxr1.loadFromFile("res/Monsters/TrollDark.PNG");
   itxr1.createMaskFromColor(itxr1.getPixel(0, 0)); // image background to invisible
+  itxr1.loadFromImage();
   sf::RectangleShape rts2;
   rts2.setSize(sf::Vector2f({ 100, 100 }));
   rts2.setTexture(itxr1);
   rts2.setPosition(300, 300);
 
   // test
-  // ImageTexture itex1, itex2;
-  // sf::RenderTexture rtex1;
-  // sf::RectangleShape rts3;
-  // itex1.loadFromFile("res/Monsters/WormWhite.PNG");
-  // itex2.loadFromFile("res/Monsters/YetiGreen.PNG");
-  // itex1.createMaskFromColor(itex1.getPixel(0, 0));
-  // itex2.createMaskFromColor(itex2.getPixel(0, 0));
-  // rtex1.create(500, 500);
-  // rts3.setPosition(0, 0);
-  // rts3.setSize(sf::Vector2f({ 200, 200 }));
-  // rts3.setTexture(itex1);
-  // rtex1.draw(rts3);
-  // rts3.setTexture(itex2);
-  // rtex1.draw(rts3);
-  // rts3.setTexture(&rtex1.getTexture());
-  // rts3.setPosition(500, 200);
+  enum {
+    GreenMushStand,
+    GreenMushMove,
+    GreenMushCount,
+  };
+  SpriteAtlas sat(GreenMushCount);
+  sat.pushBackImageTexture(GreenMushStand, ImageTexture("res/maple_res/mob/green_mushroom/stand/1110100.img.stand.0.png"));
+  sat.pushBackImageTexture(GreenMushStand, ImageTexture("res/maple_res/mob/green_mushroom/stand/1110100.img.stand.1.png"));
+  sat.pushBackImageTexture(GreenMushStand, ImageTexture("res/maple_res/mob/green_mushroom/stand/1110100.img.stand.2.png"));
+  sat.pushBackImageTexture(GreenMushMove, ImageTexture("res/maple_res/mob/green_mushroom/move/1110100.img.move.0.png"));
+  sat.pushBackImageTexture(GreenMushMove, ImageTexture("res/maple_res/mob/green_mushroom/move/1110100.img.move.1.png"));
+  sat.pushBackImageTexture(GreenMushMove, ImageTexture("res/maple_res/mob/green_mushroom/move/1110100.img.move.2.png"));
+  sat.pushBackImageTexture(GreenMushMove, ImageTexture("res/maple_res/mob/green_mushroom/move/1110100.img.move.3.png"));
+  sat.loadFromImage();
+  sat.setHoldingTime(sf::milliseconds(150));
+  SpriteTexture stex3 = sat.generateSpriteTexture();
+  AutoSprite aspr3;
+  aspr3.setSpriteTexture(stex3);
+  aspr3.setCurrentAnime(GreenMushMove);
+  aspr3.setPosition(100, 100);
 
   // background music
   sf::Music msc1;
@@ -97,13 +103,14 @@ i32 main() {
   // rendering order : order by z depth
 
   // sprite
-  enum Anime {
+  enum {
     Idle,
     Move,
     AnimeCount,
   };
   SpriteTexture stxr1;
   stxr1.loadFromFile("res/sprite/red_drake.png");
+  stxr1.loadFromImage();
   stxr1.setAnimeCount(AnimeCount);
   stxr1.setAnime(Idle, {
     { { 3, 5, 129, 83 }, sf::milliseconds(0), },
@@ -177,7 +184,7 @@ i32 main() {
     // render
     window.draw(rts1);
     window.draw(rts2);
-    // window.draw(rts3);
+    window.draw(aspr3);
     window.draw(aspr1);
     window.draw(aspr2);
     window.draw(txt1);

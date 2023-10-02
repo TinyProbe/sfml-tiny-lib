@@ -9,6 +9,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <utility>
 #include <cmath>
 
 #include <SFML/Graphics.hpp>
@@ -18,6 +19,7 @@
 
 #include "FPSManager.hpp"
 #include "KeyManager.hpp"
+#include "SpriteAtlas.hpp"
 #include "ImageTexture.hpp"
 #include "SpriteTexture.hpp"
 #include "AutoSprite.hpp"

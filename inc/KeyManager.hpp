@@ -141,7 +141,7 @@ public:
     }
 
     virtual bool canRepeat(usize const &key_code) const {
-      this->codeCheck(key_code, usize(-1), usize(-1));
+      this->codeCheck(key_code);
       return this->can_repeat[key_code];
     }
 
@@ -152,17 +152,17 @@ public:
 
     virtual void codeCheck(
       usize const &key_code_from,
-      usize const &key_code_to,
-      usize const &kind_code
+      usize const &key_code_to = -1,
+      usize const &kind_code = -1
     ) const {
       if (key_code_from != usize(-1) && key_code_from >= this->getKeyCount()) {
-        throw std::runtime_error("No exist KeyCode.");
+        throw std::runtime_error("No exist key_code_from.");
       } 
       if (key_code_to != usize(-1) && key_code_to >= this->getKeyCount()) {
-        throw std::runtime_error("No exist KeyCode.");
+        throw std::runtime_error("No exist key_code_to.");
       }
       if (kind_code != usize(-1) && kind_code >= KeyManager::KindCount) {
-        throw std::runtime_error("No exist KindCode.");
+        throw std::runtime_error("No exist kind_code.");
       }
     }
 
@@ -193,7 +193,7 @@ public:
 
   virtual void keyPress(usize const &key_code) {
     if (key_code == usize(-1)) { return; }
-    this->codeCheck(key_code, usize(-1));
+    this->codeCheck(key_code);
     if (this->key_map != nullptr) {
       if (!this->key_state[key_code] || this->key_map->canRepeat(key_code)) {
         Callback const &callback = this->key_map->getCallback(key_code, KeyManager::Press);
@@ -204,7 +204,7 @@ public:
   }
   virtual void keyRelease(usize const &key_code) {
     if (key_code == usize(-1)) { return; }
-    this->codeCheck(key_code, usize(-1));
+    this->codeCheck(key_code);
     if (this->key_map != nullptr) {
       Callback const &callback = this->key_map->getCallback(key_code, KeyManager::Release);
       if (callback) { callback(); }
@@ -224,7 +224,7 @@ public:
   // }
 
   virtual bool getKeyState(usize const &key_code) const {
-    this->codeCheck(key_code, usize(-1));
+    this->codeCheck(key_code);
     return this->key_state[key_code];
   }
 
@@ -266,13 +266,13 @@ private:
 
   virtual void codeCheck(
     usize const &key_code,
-    usize const &kind_code
+    usize const &kind_code = -1
   ) const {
     if (key_code != usize(-1) && key_code >= this->getKeyCount()) {
-      throw std::runtime_error("No exist KeyCode.");
+      throw std::runtime_error("No exist key_code.");
     }
     if (kind_code != usize(-1) && kind_code >= KeyManager::KindCount) {
-      throw std::runtime_error("No exist KindCode.");
+      throw std::runtime_error("No exist kind_code.");
     }
   }
 
