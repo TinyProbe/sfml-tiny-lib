@@ -3,21 +3,20 @@ project(sfml LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(./inc)
+include_directories(inc inc/dev inc/lib)
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(sfml src/main.cpp)
+FILE(GLOB Srcs src/*.cpp src/dev/*.cpp src/lib/*.cpp)
+add_executable(sfml ${Srcs})
 target_link_libraries(sfml
   PRIVATE sfml-graphics
   PRIVATE sfml-system
   PRIVATE sfml-audio
   PRIVATE sfml-network
-  # "-framework CoreGraphics"
-  # "-framework Foundation"
 )
 target_compile_features(sfml PRIVATE cxx_std_17)
 

@@ -1,25 +1,10 @@
-- KeyManager & KeyMap change link interface.
+- separate header.
 OK
+- ResourceManager. <-
+...
+- ObjectManager.
+...
 
-- FPSManager optimize.
-OK, one more OK
-
-- Study sprite.
-OK
-
-- Another module develop.
-  - Animation.
-  OK
-  - ImageTexture & SpriteTexture.
-  OK
-  - AutoSprite.
-  OK
-  - AutoSprite check if some bug.
-  OK
-  - SpriteAtlas.
-  OK
-  - MultiTexture(find idea).  -> 0
-  ...
   - Object.
   OK
     - BackGround.
@@ -34,7 +19,7 @@ OK
     - Player.
     - Effect.
   - Physics engine.
-  - Artificial intelligent.
+  - Artificial intelligence.
 
 
 
