@@ -1,80 +1,108 @@
-#include "Animation.hpp"
+#include "lib/Animation.hpp"
 
-Animation::Animation() {}
-Animation::Animation(usize const &anime_count) {
-  this->animes.resize(anime_count);
+Animation::Animation()
+    : ownership(new Animation::Inner()) {
 }
-Animation::Animation(Animation const &rhs) {
+
+Animation::Animation(AnimeStore const &animes)
+    : ownership(new Animation::Inner()) {
+  ownership->animes.assign(animes.begin(), animes.end());
+}
+
+Animation::Animation(usize const &anime_count)
+    : ownership(new Animation::Inner()) {
+  ownership->animes.resize(anime_count);
+}
+
+Animation::Animation(Animation const &rhs)
+    : ownership() {
   *this = rhs;
 }
-Animation &Animation::operator=(Animation const &rhs) {
+
+Animation &Animation::operator=(Animation const &rhs) noexcept {
   if (this == &rhs) { return *this; }
-  this->animes.assign(rhs.animes.begin(), rhs.animes.end());
+  if (ownership != nullptr) { delete ownership; }
+  ownership = rhs.ownership;
+  const_cast<Animation &>(rhs).ownership = nullptr;
   return *this;
 }
-Animation::~Animation() {}
+
+Animation::~Animation() noexcept {
+  if (ownership != nullptr) { delete ownership; }
+}
+
+Animation Animation::clone() const {
+  return Animation(ownership->animes);
+}
 
 usize Animation::getAnimeCount() const {
-  return this->animes.size();
+  this->ownershipCheck();
+  return ownership->animes.size();
 }
+
 void Animation::setAnimeCount(usize const &anime_count) {
-  this->animes.resize(anime_count);
+  this->ownershipCheck();
+  ownership->animes.resize(anime_count);
 }
 
 usize Animation::getMotionCount(usize const &anime_code) const {
   this->codeCheck(anime_code);
-  return this->animes[anime_code].size();
+  return ownership->animes[anime_code].size();
 }
-void Animation::setMotionCount(
-  usize const &anime_code,
-  usize const &motion_count
-) {
+
+void Animation::setMotionCount(usize const &anime_code,
+                               usize const &motion_count) {
   this->codeCheck(anime_code);
-  this->animes[anime_code].resize(motion_count);
+  ownership->animes[anime_code].resize(motion_count);
 }
 
 AnimeStore const &Animation::getAnimes() const {
-  return this->animes;
+  this->ownershipCheck();
+  return ownership->animes;
 }
-void Animation::setAnimes(AnimeStore animes) {
-  this->animes = std::move(animes);
+
+void Animation::setAnimes(AnimeStore const &animes) {
+  this->ownershipCheck();
+  ownership->animes.assign(animes.begin(), animes.end());
 }
 
 Anime const &Animation::getAnime(usize const &anime_code) const {
   this->codeCheck(anime_code);
-  return this->animes[anime_code];
+  return ownership->animes[anime_code];
 }
-void Animation::setAnime(usize const &anime_code, Anime anime) {
+
+void Animation::setAnime(usize const &anime_code, Anime const &anime) {
   this->codeCheck(anime_code);
-  this->animes[anime_code] = std::move(anime);
+  ownership->animes[anime_code].assign(anime.begin(), anime.end());
 }
 
-Motion const &Animation::getMotion(
-  usize const &anime_code,
-  usize const &motion_code
-) const {
+Motion const &Animation::getMotion(usize const &anime_code,
+                                   usize const &motion_code) const {
   this->codeCheck(anime_code, motion_code);
-  return this->animes[anime_code][motion_code];
-}
-void Animation::setMotion(
-  usize const &anime_code,
-  usize const &motion_code,
-  Motion const &motion
-) {
-  this->codeCheck(anime_code, motion_code);
-  this->animes[anime_code][motion_code] = motion;
+  return ownership->animes[anime_code][motion_code];
 }
 
-void Animation::codeCheck(
-  usize const &anime_code,
-  usize const &motion_code
-) const {
-  if (anime_code >= this->animes.size()) {
+void Animation::setMotion(usize const &anime_code,
+                          usize const &motion_code,
+                          Motion const &motion) {
+  this->codeCheck(anime_code, motion_code);
+  ownership->animes[anime_code][motion_code] = motion;
+}
+
+void Animation::ownershipCheck() const {
+  if (ownership == nullptr) {
+    throw std::runtime_error("No ownership rights whatsoever: Animation");
+  }
+}
+
+void Animation::codeCheck(usize const &anime_code,
+                          usize const &motion_code) const {
+  this->ownershipCheck();
+  if (anime_code >= ownership->animes.size()) {
     throw std::runtime_error("No exist anime_code.");
   } 
-  if (motion_code != usize(-1)
-    && motion_code >= this->animes[anime_code].size())
-  {
+  if (motion_code != usize(-1) &&
+      motion_code >= ownership->animes[anime_code].size()) {
     throw std::runtime_error("No exist motion_code.");
   }
 }

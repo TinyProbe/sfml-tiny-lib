@@ -1,165 +1,205 @@
-#include "WrapTexture.hpp"
+#include "lib/WrapTexture.hpp"
 
-WrapTexture::WrapTexture() {}
-WrapTexture::WrapTexture(
-  std::string const &filename,
-  sf::IntRect const &area
-) {
-  if (!this->texture.loadFromFile(filename, area)) {
-    throw std::runtime_error(std::string("load from file failed: ") + filename);
-  }
+#include <stdexcept>
+
+WrapTexture::WrapTexture()
+    : ownership(new WrapTexture::Inner()) {
 }
-WrapTexture::WrapTexture(
-  void const *data,
-  usize size,
-  sf::IntRect const &area
-) {
-  if (!this->texture.loadFromMemory(data, size, area)) {
-    throw std::runtime_error("load from memory failed");
-  }
+
+WrapTexture::WrapTexture(std::string const &filename, sf::IntRect const &area)
+    : ownership(new WrapTexture::Inner()) {
+  this->loadFromFile(filename, area);
 }
-WrapTexture::WrapTexture(
-  sf::InputStream &stream,
-  sf::IntRect const &area
-) {
-  if (!this->texture.loadFromStream(stream, area)) {
-    throw std::runtime_error("load from stream failed");
-  }
+
+WrapTexture::WrapTexture(void const *data, usize size, sf::IntRect const &area)
+    : ownership(new WrapTexture::Inner()) {
+  this->loadFromMemory(data, size, area);
 }
-WrapTexture::WrapTexture(
-  sf::Image const &image,
-  sf::IntRect const &area
-) {
-  if (!this->texture.loadFromImage(image, area)) {
-    throw std::runtime_error("load from image failed");
-  }
+
+WrapTexture::WrapTexture(sf::InputStream &stream, sf::IntRect const &area)
+    : ownership(new WrapTexture::Inner()) {
+  this->loadFromStream(stream, area);
 }
-WrapTexture::WrapTexture(WrapTexture const &rhs) {
+
+WrapTexture::WrapTexture(sf::Image const &image, sf::IntRect const &area)
+    : ownership(new WrapTexture::Inner()) {
+  this->loadFromImage(image, area);
+}
+
+WrapTexture::WrapTexture(sf::Texture const &texture)
+    : ownership(new WrapTexture::Inner()) {
+  ownership->texture = texture;
+}
+
+WrapTexture::WrapTexture(WrapTexture const &rhs) noexcept
+    : ownership() {
   *this = rhs;
 }
-WrapTexture &WrapTexture::operator=(WrapTexture const &rhs) {
+
+WrapTexture &WrapTexture::operator=(WrapTexture const &rhs) noexcept {
   if (this == &rhs) { return *this; }
-  this->texture = rhs.texture;
+  if (ownership != nullptr) { delete ownership; }
+  ownership = rhs.ownership;
+  const_cast<WrapTexture &>(rhs).ownership = nullptr;
   return *this;
 }
-WrapTexture::~WrapTexture() {}
 
-WrapTexture::operator sf::Texture &() {
-  return this->texture;
+WrapTexture::~WrapTexture() noexcept {
+  if (ownership != nullptr) { delete ownership; }
 }
-WrapTexture::operator sf::Texture *() {
-  return &(this->texture);
+
+WrapTexture WrapTexture::clone() const {
+  WrapTexture result;
+  result.ownership->texture = ownership->texture;
+  return WrapTexture(result);
 }
-WrapTexture::operator sf::Texture const &() const {
-  return this->texture;
+
+sf::Texture &WrapTexture::getTexture() {
+  this->ownershipCheck();
+  return ownership->texture;
 }
-WrapTexture::operator sf::Texture const *() const {
-  return &(this->texture);
+
+sf::Texture const &WrapTexture::getTexture() const {
+  this->ownershipCheck();
+  return ownership->texture;
 }
 
 sf::Vector2u WrapTexture::getSize() const {
-  return this->texture.getSize();
+  this->ownershipCheck();
+  return ownership->texture.getSize();
 }
 
 bool WrapTexture::isSmooth() const {
-  return this->texture.isSmooth();
+  this->ownershipCheck();
+  return ownership->texture.isSmooth();
 }
+
 void WrapTexture::setSmooth(bool smooth) {
-  this->texture.setSmooth(smooth);
+  this->ownershipCheck();
+  ownership->texture.setSmooth(smooth);
 }
 
 bool WrapTexture::isSrgb() const {
-  return this->texture.isSrgb();
+  this->ownershipCheck();
+  return ownership->texture.isSrgb();
 }
+
 void WrapTexture::setSrgb(bool sRgb) {
-  this->texture.setSrgb(sRgb);
+  this->ownershipCheck();
+  ownership->texture.setSrgb(sRgb);
 }
 
 bool WrapTexture::isRepeated() const {
-  return this->texture.isRepeated();
+  this->ownershipCheck();
+  return ownership->texture.isRepeated();
 }
+
 void WrapTexture::setRepeated(bool repeated) {
-  this->texture.setRepeated(repeated);
+  this->ownershipCheck();
+  ownership->texture.setRepeated(repeated);
 }
 
 u32 WrapTexture::getNativeHandle() const {
-  return this->texture.getNativeHandle();
+  this->ownershipCheck();
+  return ownership->texture.getNativeHandle();
 }
 
 void WrapTexture::create(u32 width, u32 height) {
-  this->texture.create(width, height);
+  this->ownershipCheck();
+  ownership->texture.create(width, height);
 }
 
-void WrapTexture::loadFromFile(
-  std::string const &filename,
-  sf::IntRect const &area
-) {
-  if (!this->texture.loadFromFile(filename, area)) {
+void WrapTexture::loadFromFile(std::string const &filename,
+                               sf::IntRect const &area) {
+  this->ownershipCheck();
+  if (!ownership->texture.loadFromFile(filename, area)) {
     throw std::runtime_error(std::string("load from file failed: ") + filename);
   }
 }
-void WrapTexture::loadFromMemory(
-  void const *data,
-  usize size,
-  sf::IntRect const &area
-) {
-  if (!this->texture.loadFromMemory(data, size, area)) {
+
+void WrapTexture::loadFromMemory(void const *data, usize size,
+                                 sf::IntRect const &area) {
+  this->ownershipCheck();
+  if (!ownership->texture.loadFromMemory(data, size, area)) {
     throw std::runtime_error("load from memory failed");
   }
 }
-void WrapTexture::loadFromStream(
-  sf::InputStream &stream,
-  sf::IntRect const &area
-) {
-  if (!this->texture.loadFromStream(stream, area)) {
+
+void WrapTexture::loadFromStream(sf::InputStream &stream,
+                                 sf::IntRect const &area) {
+  this->ownershipCheck();
+  if (!ownership->texture.loadFromStream(stream, area)) {
     throw std::runtime_error("load from stream failed");
   }
 }
-void WrapTexture::loadFromImage(
-  sf::Image const &image,
-  sf::IntRect const &area
-) {
-  if (!this->texture.loadFromImage(image, area)) {
+void WrapTexture::loadFromImage(sf::Image const &image,
+                                sf::IntRect const &area) {
+  this->ownershipCheck();
+  if (!ownership->texture.loadFromImage(image, area)) {
     throw std::runtime_error("load from image failed");
   }
 }
 
-sf::Image WrapTexture::copyToImage() const {
-  return std::move(this->texture.copyToImage());
+WrapImage WrapTexture::copyToImage() const {
+  this->ownershipCheck();
+  return WrapImage(ownership->texture.copyToImage());
 }
 
 void WrapTexture::swap(sf::Texture &right) {
-  this->texture.swap(right);
+  this->ownershipCheck();
+  ownership->texture.swap(right);
 }
+
 void WrapTexture::generateMipmap() {
-  if (!this->texture.generateMipmap()) {
+  this->ownershipCheck();
+  if (!ownership->texture.generateMipmap()) {
     throw std::runtime_error("generate mipmap failed");
   }
 }
 
 void WrapTexture::update(sf::Uint8 const *pixels) {
-  this->texture.update(pixels);
+  this->ownershipCheck();
+  ownership->texture.update(pixels);
 }
-void WrapTexture::update(
-  sf::Uint8 const *pixels, u32 width, u32 height, u32 x, u32 y
-) {
-  this->texture.update(pixels, width, height, x, y);
+
+void WrapTexture::update(sf::Uint8 const *pixels,
+                         u32 width, u32 height, u32 x, u32 y) {
+  this->ownershipCheck();
+  ownership->texture.update(pixels, width, height, x, y);
 }
+
 void WrapTexture::update(sf::Texture const &texture) {
-  this->texture.update(texture);
+  this->ownershipCheck();
+  ownership->texture.update(texture);
 }
+
 void WrapTexture::update(sf::Texture const &texture, u32 x, u32 y) {
-  this->texture.update(texture, x, y);
+  this->ownershipCheck();
+  ownership->texture.update(texture, x, y);
 }
+
 void WrapTexture::update(sf::Image const &image) {
-  this->texture.update(image);
+  this->ownershipCheck();
+  ownership->texture.update(image);
 }
+
 void WrapTexture::update(sf::Image const &image, u32 x, u32 y) {
-  this->texture.update(image, x, y);
+  this->ownershipCheck();
+  ownership->texture.update(image, x, y);
 }
+
 void WrapTexture::update(sf::Window const &window) {
-  this->texture.update(window);
+  this->ownershipCheck();
+  ownership->texture.update(window);
 }
+
 void WrapTexture::update(sf::Window const &window, u32 x, u32 y) {
-  this->texture.update(window, x, y);
+  this->ownershipCheck();
+  ownership->texture.update(window, x, y);
+}
+
+void WrapTexture::ownershipCheck() const {
+  if (ownership == nullptr) {
+    throw std::runtime_error("No ownership rights whatsoever: WrapTexture");
+  }
 }

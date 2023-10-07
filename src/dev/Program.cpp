@@ -9,7 +9,7 @@ void Program::run() {
   //   sf::Style::Fullscreen
   // );
   sf::RenderWindow window(
-    sf::VideoMode({ WIDTH, HEIGHT }),
+    sf::VideoMode({ kWidth, kHeight }),
     "SFML!",
     sf::Style::Titlebar | sf::Style::Close // WindowMode default setting
   );
@@ -30,108 +30,82 @@ void Program::run() {
   txt1.setPosition(0, 0);
 
   // background
-  WrapImage img1;
-  img1.loadFromFile("res/background/ereve.jpg");
-  WrapTexture tex1;
-  tex1.loadFromImage(img1);
+  WrapImage img1("res/background/ereve.jpg");
+  WrapTexture tex1(img1.getImage());
   sf::RectangleShape rts1;
-  rts1.setSize(sf::Vector2f({ WIDTH, HEIGHT }));
-  rts1.setTexture(tex1);
+  rts1.setSize(sf::Vector2f({ kWidth, kHeight }));
+  rts1.setTexture(&tex1.getTexture());
   rts1.setPosition(0, 0);
 
   // monster
-  WrapImage img2;
-  img2.loadFromFile("res/Monsters/TrollDark.PNG");
-  img2.createMaskFromColor(img2.getPixel(0, 0)); // image background to invisible
-  WrapTexture tex2;
-  tex2.loadFromImage(img2);
+  WrapImage img2("res/Monsters/TrollDark.PNG");
+  img2.createMaskFromColor(img2.getPixel(0, 0)); // background to invisible
+  WrapTexture tex2(img2.getImage());
   sf::RectangleShape rts2;
   rts2.setSize(sf::Vector2f({ 100, 100 }));
-  rts2.setTexture(tex2);
+  rts2.setTexture(&tex2.getTexture());
   rts2.setPosition(300, 300);
 
-  // test
-  enum {
-    GreenMushStand,
-    GreenMushMove,
-    GreenMushCount,
-  };
-  SpriteGenerator sgn(GreenMushCount);
-  sgn.pushBackImage(GreenMushStand, WrapImage("res/maple_res/mob/green_mushroom/stand/1110100.img.stand.0.png"));
-  sgn.pushBackImage(GreenMushStand, WrapImage("res/maple_res/mob/green_mushroom/stand/1110100.img.stand.1.png"));
-  sgn.pushBackImage(GreenMushStand, WrapImage("res/maple_res/mob/green_mushroom/stand/1110100.img.stand.2.png"));
-  sgn.pushBackImage(GreenMushMove, WrapImage("res/maple_res/mob/green_mushroom/move/1110100.img.move.0.png"));
-  sgn.pushBackImage(GreenMushMove, WrapImage("res/maple_res/mob/green_mushroom/move/1110100.img.move.1.png"));
-  sgn.pushBackImage(GreenMushMove, WrapImage("res/maple_res/mob/green_mushroom/move/1110100.img.move.2.png"));
-  sgn.pushBackImage(GreenMushMove, WrapImage("res/maple_res/mob/green_mushroom/move/1110100.img.move.3.png"));
-  sgn.setHoldingTime(sf::milliseconds(150));
-  SpriteAtlas sat3 = sgn.generateSpriteAtlas();
-  AutoSprite aspr3;
-  aspr3.setSpriteAtlas(sat3);
-  aspr3.setCurrentAnime(GreenMushMove);
-  aspr3.setPosition(100, 100);
-
-  // background music
-  sf::Music msc1;
-  if (!msc1.openFromFile("res/sound/ereve.mp3")) {
-    throw std::runtime_error("msc1 load failed!");
-  }
-  msc1.setVolume(100);
-  msc1.setLoop(true);
-  msc1.play();
-
-  // attack sound
-  sf::Music msc2;
-  if (!msc2.openFromFile("res/sound/attack.mp3.flac")) {
-    throw std::runtime_error("msc2 load failed!");
-  }
-  msc2.setVolume(100);
-  msc2.setLoop(false);
-
   // sprite
-  enum {
-    Idle,
-    Move,
-    AnimeCount,
-  };
-  SpriteAtlas sat1;
-  sat1.loadFromFile("res/sprite/red_drake.png");
-  sat1.setAnimeCount(AnimeCount);
-  sat1.setAnime(Idle, {
-    { { 3, 5, 129, 83 }, sf::milliseconds(0), },
-  });
-  sat1.setAnime(Move, {
-    { { 4, 113, 133, 75 }, sf::milliseconds(300), },
-    { { 149, 113, 127, 82 }, sf::milliseconds(300), },
-    { { 289, 113, 124, 76 }, sf::milliseconds(300), },
-    { { 430, 113, 126, 82 }, sf::milliseconds(300), },
-  });
-  AutoSprite aspr1;
-  aspr1.setSpriteAtlas(sat1);
-  aspr1.setCurrentAnime(Move);
-  aspr1.setPosition(400, 578); // left, top pointing is sometimes unmatchable floor position.
-  aspr1.setColor(sf::Color(255, 255, 255, 150)); // apply colorate.
+  WrapImage img3("res/sprite/red_drake.png");
+  WrapTexture tex3(img3.getImage());
+  sf::Sprite spr1;
+  spr1.setTexture(tex3.getTexture());
+  spr1.setTextureRect(sf::IntRect({ 0, 0, 130, 100 }));
+  spr1.setPosition(200, 200);
+  spr1.setOrigin(spr1.getTextureRect().width / 2,
+                 spr1.getTextureRect().height);
+
+  // animation ownership pattern test
+  // Animation anm1(AnimeStore({
+  //   {
+  //     { sf::IntRect({ 0, 0, 100, 100 }), sf::milliseconds(100), },
+  //   },
+  // }));
+  // Animation anm2(anm1.clone());
+  // AnimeStore const &animes = anm2.getAnimes();
+  // std::cout << animes[0][0].first.width << '\n';
+  // AnimeStore const &asd = anm1.getAnimes();
+  // std::cout << asd[0][0].first.width << '\n';
+
+  sf::SoundBuffer sbf1, sbf2;
+  if (!sbf1.loadFromFile("res/sound/ereve.mp3")) {
+    throw std::runtime_error("sbf1 load failed!");
+  }
+  if (!sbf2.loadFromFile("res/sound/attack.mp3.flac")) {
+    throw std::runtime_error("sbf2 load failed!");
+  }
+  sf::Sound snd1, snd2;
+  // background music
+  snd1.setBuffer(sbf1);
+  snd1.setVolume(100);
+  snd1.setLoop(true);
+  snd1.play();
+  // attack sound
+  snd2.setBuffer(sbf2);
+  snd2.setVolume(100);
+  snd2.setLoop(false);
 
   // key manager & key map
   KeyManager::KeyMap kmap(sf::Keyboard::KeyCount);
-  KeyManager::setKeyMap(kmap);
-  kmap.setCallback(sf::Keyboard::Escape, KeyManager::Press, [&]() {
+  KeyManager::setKeyMap(&kmap);
+  kmap.setCallback(sf::Keyboard::Escape, KeyManager::kPress, [&]() {
     window.close();
   });
-  kmap.setCallback(sf::Keyboard::Hyphen, KeyManager::Press, [&]() {
-    msc1.setVolume(fmax(msc1.getVolume() - 3, 0));
+  kmap.setCallback(sf::Keyboard::Hyphen, KeyManager::kPress, [&]() {
+    snd1.setVolume(fmax(snd1.getVolume() - 3, 0));
   }, true);
-  kmap.setCallback(sf::Keyboard::Equal, KeyManager::Press, [&]() {
-    msc1.setVolume(fmin(msc1.getVolume() + 3, 100));
+  kmap.setCallback(sf::Keyboard::Equal, KeyManager::kPress, [&]() {
+    snd1.setVolume(fmin(snd1.getVolume() + 3, 100));
   }, true);
-  kmap.setCallback(sf::Keyboard::LBracket, KeyManager::Press, [&]() {
-    msc1.setPlayingOffset(msc1.getPlayingOffset() - sf::seconds(2));
+  kmap.setCallback(sf::Keyboard::LBracket, KeyManager::kPress, [&]() {
+    snd1.setPlayingOffset(snd1.getPlayingOffset() - sf::seconds(2));
   }, true);
-  kmap.setCallback(sf::Keyboard::RBracket, KeyManager::Press, [&]() {
-    msc1.setPlayingOffset(msc1.getPlayingOffset() + sf::seconds(2));
+  kmap.setCallback(sf::Keyboard::RBracket, KeyManager::kPress, [&]() {
+    snd1.setPlayingOffset(snd1.getPlayingOffset() + sf::seconds(2));
   }, true);
-  kmap.setCallback(sf::Keyboard::Space, KeyManager::Press, [&]() {
-    msc2.play();
+  kmap.setCallback(sf::Keyboard::Space, KeyManager::kPress, [&]() {
+    snd2.play();
   });
 
   sf::Event event;
@@ -149,11 +123,12 @@ void Program::run() {
     KeyManager::keyFramework();
     txt1.setString(std::to_string(FPSManager::getCurrentFPS()));
 
+    spr1.setRotation(usize(spr1.getRotation() + 1.0f) % 360);
+
     // render
     window.draw(rts1);
     window.draw(rts2);
-    window.draw(aspr3);
-    window.draw(aspr1);
+    window.draw(spr1);
     window.draw(txt1);
     window.display();
 

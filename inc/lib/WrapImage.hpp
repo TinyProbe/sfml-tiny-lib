@@ -1,10 +1,5 @@
-#pragma once
-#ifndef AUTO_IMAGE_HPP
-#define AUTO_IMAGE_HPP
-
-#include <stdexcept>
-#include <vector>
-#include <string>
+#ifndef AUTO_IMAGE_HPP_
+#define AUTO_IMAGE_HPP_
 
 #include <SFML/Graphics.hpp>
 
@@ -12,21 +7,20 @@ using usize = unsigned long;
 using u32 = unsigned int;
 
 class WrapImage {
-  sf::Image image;
+ public:
+  explicit WrapImage();
+  explicit WrapImage(std::string const &filename);
+  explicit WrapImage(void const *data, usize size);
+  explicit WrapImage(sf::InputStream &stream);
+  explicit WrapImage(sf::Image const &image);
+  explicit WrapImage(WrapImage const &rhs) noexcept;
+  virtual WrapImage &operator=(WrapImage const &rhs) noexcept;
+  virtual ~WrapImage() noexcept;
 
-public:
-  WrapImage();
-  WrapImage(std::string const &filename);
-  WrapImage(void const *data, usize size);
-  WrapImage(sf::InputStream &stream);
-  WrapImage(WrapImage const &rhs);
-  virtual WrapImage &operator=(WrapImage const &rhs);
-  virtual ~WrapImage();
+  virtual WrapImage clone() const;
 
-  virtual operator sf::Image &();
-  virtual operator sf::Image *();
-  virtual operator sf::Image const &() const;
-  virtual operator sf::Image const *() const;
+  virtual sf::Image &getImage();
+  virtual sf::Image const &getImage() const;
 
   virtual sf::Vector2u getSize() const;
 
@@ -35,42 +29,38 @@ public:
 
   virtual sf::Uint8 const *getPixelsPtr() const;
 
-  virtual void create(
-    usize const &width,
-    usize const &height,
-    sf::Color const &color = sf::Color(0, 0, 0)
-  );
-  virtual void create(
-    usize const &width,
-    usize const &height,
-    sf::Uint8 const *pixels
-  );
+  virtual void create(usize const &width,
+                      usize const &height,
+                      sf::Color const &color = sf::Color(0, 0, 0));
+  virtual void create(usize const &width,
+                      usize const &height,
+                      sf::Uint8 const *pixels);
+  virtual void copy(sf::Image const &source,
+                    u32 destX = 0,
+                    u32 destY = 0,
+                    sf::IntRect const &sourceRect = sf::IntRect(0, 0, 0, 0),
+                    bool applyAlpha = false);
 
   virtual void loadFromFile(std::string const &filename);
   virtual void loadFromMemory(void const *data, usize size);
   virtual void loadFromStream(sf::InputStream &stream);
 
   virtual void saveToFile(std::string const &filename) const;
-  virtual void saveToMemory(
-    std::vector<sf::Uint8> &output,
-    std::string const &format
-  ) const;
+  virtual void saveToMemory(std::vector<sf::Uint8> &output,
+                            std::string const &format) const;
 
-  virtual void createMaskFromColor(
-    sf::Color const &color,
-    sf::Uint8 alpha = 0
-  );
-  virtual void copy(
-    sf::Image const &source,
-    u32 destX = 0,
-    u32 destY = 0,
-    sf::IntRect const &sourceRect = sf::IntRect(0, 0, 0, 0),
-    bool applyAlpha = false
-  );
+  virtual void createMaskFromColor(sf::Color const &color,
+                                   sf::Uint8 alpha = 0);
 
   virtual void flipHorizontally();
   virtual void flipVertically();
 
-};
+ private:
+  virtual void ownershipCheck() const;
+
+  struct Inner {
+    sf::Image image;
+  } *ownership;
+}; // WrapImage
 
 #endif

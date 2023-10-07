@@ -1,45 +1,33 @@
-#pragma once
-#ifndef WRAP_TEXTURE_HPP
-#define WRAP_TEXTURE_HPP
-
-#include <stdexcept>
-#include <string>
+#ifndef WRAP_TEXTURE_HPP_
+#define WRAP_TEXTURE_HPP_
 
 #include <SFML/Graphics.hpp>
+
+#include "lib/WrapImage.hpp"
 
 using usize = unsigned long;
 using u32 = unsigned int;
 
 class WrapTexture {
-  sf::Texture texture;
+ public:
+  explicit WrapTexture();
+  explicit WrapTexture(std::string const &filename,
+                       sf::IntRect const &area = sf::IntRect());
+  explicit WrapTexture(void const *data, usize size,
+                       sf::IntRect const &area = sf::IntRect());
+  explicit WrapTexture(sf::InputStream &stream,
+                       sf::IntRect const &area = sf::IntRect());
+  explicit WrapTexture(sf::Image const &image,
+                       sf::IntRect const &area = sf::IntRect());
+  explicit WrapTexture(sf::Texture const &texture);
+  explicit WrapTexture(WrapTexture const &rhs) noexcept;
+  virtual WrapTexture &operator=(WrapTexture const &rhs) noexcept;
+  virtual ~WrapTexture() noexcept;
 
-public:
-  WrapTexture();
-  WrapTexture(
-    std::string const &filename,
-    sf::IntRect const &area = sf::IntRect()
-  );
-  WrapTexture(
-    void const *data,
-    usize size,
-    sf::IntRect const &area = sf::IntRect()
-  );
-  WrapTexture(
-    sf::InputStream &stream,
-    sf::IntRect const &area = sf::IntRect()
-  );
-  WrapTexture(
-    sf::Image const &image,
-    sf::IntRect const &area = sf::IntRect()
-  );
-  WrapTexture(WrapTexture const &rhs);
-  virtual WrapTexture &operator=(WrapTexture const &rhs);
-  virtual ~WrapTexture();
+  virtual WrapTexture clone() const;
 
-  virtual operator sf::Texture &();
-  virtual operator sf::Texture *();
-  virtual operator sf::Texture const &() const;
-  virtual operator sf::Texture const *() const;
+  virtual sf::Texture &getTexture();
+  virtual sf::Texture const &getTexture() const;
 
   virtual sf::Vector2u getSize() const;
 
@@ -56,33 +44,23 @@ public:
 
   virtual void create(u32 width, u32 height);
 
-  virtual void loadFromFile(
-    std::string const &filename,
-    sf::IntRect const &area = sf::IntRect()
-  );
-  virtual void loadFromMemory(
-    void const *data,
-    usize size,
-    sf::IntRect const &area = sf::IntRect()
-  );
-  virtual void loadFromStream(
-    sf::InputStream &stream,
-    sf::IntRect const &area = sf::IntRect()
-  );
-  virtual void loadFromImage(
-    sf::Image const &image,
-    sf::IntRect const &area = sf::IntRect()
-  );
+  virtual void loadFromFile(std::string const &filename,
+                            sf::IntRect const &area = sf::IntRect());
+  virtual void loadFromMemory(void const *data, usize size,
+                              sf::IntRect const &area = sf::IntRect());
+  virtual void loadFromStream(sf::InputStream &stream,
+                              sf::IntRect const &area = sf::IntRect());
+  virtual void loadFromImage(sf::Image const &image,
+                             sf::IntRect const &area = sf::IntRect());
 
-  virtual sf::Image copyToImage() const;
+  virtual WrapImage copyToImage() const;
 
   virtual void swap(sf::Texture &right);
   virtual void generateMipmap();
 
   virtual void update(sf::Uint8 const *pixels);
-  virtual void update(
-    sf::Uint8 const *pixels, u32 width, u32 height, u32 x, u32 y
-  );
+  virtual void update(sf::Uint8 const *pixels,
+                      u32 width, u32 height, u32 x, u32 y);
   virtual void update(sf::Texture const &texture);
   virtual void update(sf::Texture const &texture, u32 x, u32 y);
   virtual void update(sf::Image const &image);
@@ -90,6 +68,12 @@ public:
   virtual void update(sf::Window const &window);
   virtual void update(sf::Window const &window, u32 x, u32 y);
 
-};
+ private:
+  virtual void ownershipCheck() const;
+
+  struct Inner {
+    sf::Texture texture;
+  } *ownership;
+}; // WrapTexture
 
 #endif

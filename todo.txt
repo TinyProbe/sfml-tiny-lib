@@ -1,25 +1,24 @@
-- separate header.
+- separate header/source.
 OK
-- ResourceManager. <-
+- FPSManager sync.
+OK
+- apply ownership pattern.
 ...
+- check Sound/SoundBuffer.
+- MouseManager.
+- ResourceManager.
 - ObjectManager.
-...
-
-  - Object.
-  OK
-    - BackGround.
-    ...
-    - Sculpture.
-    ...
-    - Terrain.
-    ...
-    - Interface.
-    - Mob.
-    - NPC.
-    - Player.
-    - Effect.
-  - Physics engine.
-  - Artificial intelligence.
+- Object.
+  - BackGround.
+  - Structure.
+  - Terrain.
+  - Interface.
+  - Mob.
+  - NPC.
+  - Player.
+  - Effect.
+- Physics engine.
+- Artificial intelligence.
 
 
 
