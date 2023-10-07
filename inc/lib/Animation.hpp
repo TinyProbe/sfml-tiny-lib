@@ -21,7 +21,7 @@ class Animation {
   virtual Animation &operator=(Animation const &rhs) noexcept;
   virtual ~Animation() noexcept;
 
-  virtual Animation clone() const;
+  virtual Animation clone();
 
   virtual usize getAnimeCount() const;
   virtual void setAnimeCount(usize const &anime_count);
@@ -42,14 +42,22 @@ class Animation {
                          usize const &motion_code,
                          Motion const &motion);
 
+ protected:
+  struct Inner {
+    AnimeStore animes;
+
+    virtual Inner &operator=(Inner const &rhs) {
+      if (this == &rhs) { return *this; }
+      this->animes.assign(rhs.animes.begin(), rhs.animes.end());
+      return *this;
+    }
+  } *ownership;
+
  private:
   virtual void ownershipCheck() const;
   virtual void codeCheck(usize const &anime_code,
                          usize const &motion_code = -1) const;
 
-  struct Inner {
-    AnimeStore animes;
-  } *ownership;
 }; // Animation
 
 #endif

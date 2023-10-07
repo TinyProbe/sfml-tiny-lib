@@ -17,6 +17,7 @@
 // dev
 #include "dev/Program.hpp"
 #include "dev/object/Object.hpp"
+#include "dev/object/Background.hpp"
 
 // lib
 #include "lib/Animation.hpp"

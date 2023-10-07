@@ -1,7 +1,5 @@
 #include "dev/object/Object.hpp"
 
-using u8 = unsigned char;
-
 Object::Object() noexcept {
   ownership->z = 1.0f;
   ownership->visible = true;

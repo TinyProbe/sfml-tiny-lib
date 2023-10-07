@@ -43,9 +43,12 @@ WrapImage::~WrapImage() noexcept {
   if (ownership != nullptr) { delete ownership; }
 }
 
-WrapImage WrapImage::clone() const {
-  WrapImage result;
-  result.ownership->image = ownership->image;
+WrapImage WrapImage::clone() {
+  WrapImage result(*this);
+  if (result.ownership != nullptr) {
+    ownership = new WrapImage::Inner();
+    *ownership = *result.ownership;
+  }
   return WrapImage(result);
 }
 

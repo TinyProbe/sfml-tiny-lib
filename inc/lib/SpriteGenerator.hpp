@@ -21,7 +21,7 @@ class SpriteGenerator {
   virtual SpriteGenerator &operator=(SpriteGenerator const &rhs) noexcept;
   virtual ~SpriteGenerator() noexcept;
 
-  virtual SpriteGenerator clone() const;
+  virtual SpriteGenerator clone();
 
   virtual WrapTexture generateSpriteSheet() const;
 
@@ -64,14 +64,23 @@ class SpriteGenerator {
   virtual void flipHorizontally();
   virtual void flipVertically();
 
+ protected:
+  struct Inner {
+    WrapImagesStore images_store;
+
+    virtual Inner &operator=(Inner const &rhs) {
+      if (this == &rhs) { return *this; }
+      this->images_store.assign(rhs.images_store.begin(),
+                                rhs.images_store.end());
+      return *this;
+    }
+  } *ownership;
+
  private:
   virtual void ownershipCheck() const;
   virtual void codeCheck(usize const &images_code,
                          usize const &image_code = -1) const;
 
-  struct Inner {
-    WrapImagesStore images_store;
-  } *ownership;
 }; // SpriteGenerator
 
 #endif

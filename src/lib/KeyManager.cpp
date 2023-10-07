@@ -43,13 +43,12 @@ KeyManager::KeyMap::~KeyMap() noexcept {
   }
 }
 
-KeyManager::KeyMap KeyManager::KeyMap::clone() const {
-  KeyManager::KeyMap result;
-  result.ownership->callbacks.assign(ownership->callbacks.begin(),
-                                     ownership->callbacks.end());
-  result.ownership->can_repeat.assign(ownership->can_repeat.begin(),
-                                     ownership->can_repeat.end());
-  result.ownership->is_linked = bool();
+KeyManager::KeyMap KeyManager::KeyMap::clone() {
+  KeyManager::KeyMap result(*this);
+  if (result.ownership != nullptr) {
+    ownership = new KeyManager::KeyMap::Inner();
+    *ownership = *result.ownership;
+  }
   return KeyManager::KeyMap(result);
 }
 

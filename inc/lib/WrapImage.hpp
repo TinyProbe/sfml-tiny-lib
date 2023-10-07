@@ -17,7 +17,7 @@ class WrapImage {
   virtual WrapImage &operator=(WrapImage const &rhs) noexcept;
   virtual ~WrapImage() noexcept;
 
-  virtual WrapImage clone() const;
+  virtual WrapImage clone();
 
   virtual sf::Image &getImage();
   virtual sf::Image const &getImage() const;
@@ -55,12 +55,20 @@ class WrapImage {
   virtual void flipHorizontally();
   virtual void flipVertically();
 
+ protected:
+  struct Inner {
+    sf::Image image;
+
+    virtual Inner &operator=(Inner const &rhs) {
+      if (this == &rhs) { return *this; }
+      this->image = rhs.image;
+      return *this;
+    }
+  } *ownership;
+
  private:
   virtual void ownershipCheck() const;
 
-  struct Inner {
-    sf::Image image;
-  } *ownership;
 }; // WrapImage
 
 #endif

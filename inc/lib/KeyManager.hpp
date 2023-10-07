@@ -27,7 +27,7 @@ class KeyManager {
     virtual KeyMap &operator=(KeyMap const &rhs) noexcept;
     virtual ~KeyMap() noexcept;
 
-    virtual KeyManager::KeyMap clone() const;
+    virtual KeyManager::KeyMap clone();
 
     virtual usize getKeyCount() const;
     virtual void setKeyCount(usize const &key_count);
@@ -54,6 +54,21 @@ class KeyManager {
 
     virtual bool canRepeat(usize const &key_code) const;
 
+   protected:
+    struct Inner {
+      CallbackStore callbacks;
+      std::vector<bool> can_repeat;
+      bool is_linked;
+
+      virtual Inner &operator=(Inner const &rhs) {
+        if (this == &rhs) { return *this; }
+        this->callbacks.assign(rhs.callbacks.begin(), rhs.callbacks.end());
+        this->can_repeat.assign(rhs.can_repeat.begin(), rhs.can_repeat.end());
+        this->is_linked = rhs.is_linked;
+        return *this;
+      }
+    } *ownership;
+
    private:
     friend class KeyManager;
     virtual void link();
@@ -64,11 +79,6 @@ class KeyManager {
                            usize const &key_code_to = -1,
                            usize const &kind_code = -1) const;
 
-    struct Inner {
-      CallbackStore callbacks;
-      std::vector<bool> can_repeat;
-      bool is_linked;
-    } *ownership;
   }; // KeyMap
 
   static void keyPress(usize const &key_code);

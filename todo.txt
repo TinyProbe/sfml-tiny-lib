@@ -3,13 +3,16 @@ OK
 - FPSManager sync.
 OK
 - apply ownership pattern.
-...
+OK
 - check Sound/SoundBuffer.
+...
 - MouseManager.
 - ResourceManager.
 - ObjectManager.
 - Object.
+OK
   - BackGround.
+  ...
   - Structure.
   - Terrain.
   - Interface.

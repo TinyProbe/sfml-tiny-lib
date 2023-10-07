@@ -9,11 +9,11 @@ class Animation;
 
 class Object {
  public:
-  explicit Object();
-  explicit Object(sf::Texture const &texture, bool resetRect = false);
+  explicit Object() noexcept;
+  explicit Object(sf::Texture const &texture, bool resetRect = false) noexcept;
   explicit Object(Object const &rhs) = delete;
-  virtual Object &operator=(Object const &rhs) = delete;
-  virtual ~Object();
+  Object &operator=(Object const &rhs) = delete;
+  virtual ~Object() noexcept;
 
   virtual sf::Sprite &getSprite();
   virtual sf::Sprite const &getSprite() const;
@@ -33,15 +33,25 @@ class Object {
   virtual void release() = 0;
 
  protected:
-  virtual void ownershipCheck() const;
-
- private:
   struct Inner {
     sf::Sprite sprite;
     Animation const *animation;
     f32 z;
     bool visible;
+
+    virtual Inner &operator=(Inner const &rhs) {
+      if (this == &rhs) { return *this; }
+      this->sprite = rhs.sprite;
+      this->animation = rhs.animation;
+      this->z = rhs.z;
+      this->visible = rhs.visible;
+      return *this;
+    }
   } *ownership;
+
+ private:
+  virtual void ownershipCheck() const;
+
 }; // Object
 
 #endif

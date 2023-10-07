@@ -31,8 +31,13 @@ Animation::~Animation() noexcept {
   if (ownership != nullptr) { delete ownership; }
 }
 
-Animation Animation::clone() const {
-  return Animation(ownership->animes);
+Animation Animation::clone() {
+  Animation result(*this);
+  if (result.ownership != nullptr) {
+    ownership = new Animation::Inner();
+    *ownership = *result.ownership;
+  }
+  return Animation(result);
 }
 
 usize Animation::getAnimeCount() const {

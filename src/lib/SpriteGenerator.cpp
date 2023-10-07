@@ -35,10 +35,12 @@ SpriteGenerator::~SpriteGenerator() noexcept {
   if (ownership != nullptr) { delete ownership; }
 }
 
-SpriteGenerator SpriteGenerator::clone() const {
-  SpriteGenerator result;
-  result.ownership->images_store.assign(ownership->images_store.begin(),
-                                        ownership->images_store.end());
+SpriteGenerator SpriteGenerator::clone() {
+  SpriteGenerator result(*this);
+  if (result.ownership != nullptr) {
+    ownership = new SpriteGenerator::Inner();
+    *ownership = *result.ownership;
+  }
   return SpriteGenerator(result);
 }
 

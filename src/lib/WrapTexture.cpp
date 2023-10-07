@@ -48,9 +48,12 @@ WrapTexture::~WrapTexture() noexcept {
   if (ownership != nullptr) { delete ownership; }
 }
 
-WrapTexture WrapTexture::clone() const {
-  WrapTexture result;
-  result.ownership->texture = ownership->texture;
+WrapTexture WrapTexture::clone() {
+  WrapTexture result(*this);
+  if (result.ownership != nullptr) {
+    ownership = new WrapTexture::Inner();
+    *ownership = *result.ownership;
+  }
   return WrapTexture(result);
 }
 
