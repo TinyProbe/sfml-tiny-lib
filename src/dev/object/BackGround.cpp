@@ -1,21 +1,20 @@
 #include "dev/object/Background.hpp"
 
 Background::Background()
-    : ownership(new Background::Inner()),
-      Object() {
+    : ownership(new Background::Inner()) {
 }
 
-Background::Background(sf::Texture const &texture, bool resetRect = false)
-    : ownership(new Background::Inner()),
-      Object(texture, resetRect) {
+Background::Background(sf::Texture const &texture, bool resetRect)
+    : ownership(new Background::Inner()) {
+  ownership->sprite.setTexture(texture, resetRect);
 }
 
-Background::Background(Background const &rhs)
+Background::Background(Background const &rhs) noexcept
     : ownership() {
   *this = rhs;
 }
 
-Background &Background::operator=(Background const &rhs) {
+Background &Background::operator=(Background const &rhs) noexcept {
   if (this == &rhs) { return *this; }
   if (ownership != nullptr) { delete ownership; }
   ownership = rhs.ownership;
@@ -23,17 +22,13 @@ Background &Background::operator=(Background const &rhs) {
   return *this;
 }
 
-Background::~Background() {
+Background::~Background() noexcept {
   if (ownership != nullptr) { delete ownership; }
 }
 
 Background Background::clone() const {
-  Background result(*this);
-  if (result.ownership != nullptr) {
-    ownership = new Background::Inner();
-    *ownership = *result.ownership;
-  }
-  return Background(result);
+  this->ownershipCheck();
+  return Background(new Background::Inner(*ownership));
 }
 
 void Background::initialize() {
@@ -46,6 +41,25 @@ void Background::render() {
 }
 
 void Background::release() {
+}
+
+Background::Inner::Inner()
+    : Object::Inner() {
+}
+
+Background::Inner::Inner(Background::Inner const &rhs) {
+  *this = rhs;
+}
+
+Background::Inner &Background::Inner::operator=(Background::Inner const &rhs) {
+  if (this == &rhs) { return *this; }
+  dynamic_cast<Object::Inner &>(*this) =
+      dynamic_cast<Object::Inner const &>(rhs);
+  return *this;
+}
+
+Background::Background(Background::Inner *const &ownership) noexcept
+    : ownership(ownership) {
 }
 
 void Background::ownershipCheck() const {

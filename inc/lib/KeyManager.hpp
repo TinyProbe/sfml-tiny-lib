@@ -5,19 +5,20 @@
 #include <utility>
 #include <vector>
 
-using usize = unsigned long;
-using Callback = std::function<void()>;
-using CallbackElement = std::vector<Callback>;
-using CallbackStore = std::vector<CallbackElement>;
+#include <SFML/Window/Event.hpp>
 
-// A powerful convenient key manager.
+using usize = unsigned long;
+using KeyCallback = std::function<void()>;
+using KeyCallbackElement = std::vector<KeyCallback>;
+using KeyCallbackStore = std::vector<KeyCallbackElement>;
+
 class KeyManager {
  public:
-  enum {
+  enum KeyEvent {
     kPress = 0,
     kRelease,
     kPressed,
-    kKindCount,
+    kKeyEventCount,
   };
   class KeyMap {
    public:
@@ -27,46 +28,42 @@ class KeyManager {
     virtual KeyMap &operator=(KeyMap const &rhs) noexcept;
     virtual ~KeyMap() noexcept;
 
-    virtual KeyManager::KeyMap clone();
+    virtual KeyManager::KeyMap clone() const;
 
     virtual usize getKeyCount() const;
     virtual void setKeyCount(usize const &key_count);
 
-    virtual CallbackStore const &getCallbacks() const;
+    virtual KeyCallbackStore const &getKeyCallbacks() const;
 
-    virtual Callback const &getCallback(usize const &key_code,
-                                        usize const &kind_code) const;
-    virtual void setCallback(usize const &key_code,
-                             usize const &kind_code,
-                             Callback callback,
-                             bool const &can_repeat = false);
-    virtual void copyCallback(usize const &key_code_from,
-                              usize const &key_code_to,
-                              usize const &kind_code);
-    virtual void moveCallback(usize const &key_code_from,
-                              usize const &key_code_to,
-                              usize const &kind_code);
-    virtual void swapCallback(usize const &key_code_from,
-                              usize const &key_code_to,
-                              usize const &kind_code);
-    virtual std::pair<Callback, bool> popCallback(usize const &key_code,
-                                                  usize const &kind_code);
+    virtual KeyCallback const &getKeyCallback(usize const &key_code,
+                                              usize const &key_event_code) const;
+    virtual void setKeyCallback(usize const &key_code,
+                                usize const &key_event_code,
+                                KeyCallback const &callback,
+                                bool const &can_repeat = false);
+    virtual void copyKeyCallback(usize const &key_code_from,
+                                 usize const &key_code_to,
+                                 usize const &key_event_code);
+    virtual void moveKeyCallback(usize const &key_code_from,
+                                 usize const &key_code_to,
+                                 usize const &key_event_code);
+    virtual void swapKeyCallback(usize const &key_code_from,
+                                 usize const &key_code_to,
+                                 usize const &key_event_code);
+    virtual std::pair<KeyCallback, bool> popKeyCallback(usize const &key_code,
+                                                        usize const &key_event_code);
 
     virtual bool canRepeat(usize const &key_code) const;
 
    protected:
     struct Inner {
-      CallbackStore callbacks;
+      KeyCallbackStore callbacks;
       std::vector<bool> can_repeat;
       bool is_linked;
 
-      virtual Inner &operator=(Inner const &rhs) {
-        if (this == &rhs) { return *this; }
-        this->callbacks.assign(rhs.callbacks.begin(), rhs.callbacks.end());
-        this->can_repeat.assign(rhs.can_repeat.begin(), rhs.can_repeat.end());
-        this->is_linked = rhs.is_linked;
-        return *this;
-      }
+      explicit Inner();
+      explicit Inner(Inner const &rhs);
+      virtual Inner &operator=(Inner const &rhs);
     } *ownership;
 
    private:
@@ -74,16 +71,15 @@ class KeyManager {
     virtual void link();
     virtual void unlink();
 
+    explicit KeyMap(KeyMap::Inner *const &ownership) noexcept;
     virtual void ownershipCheck() const;
     virtual void codeCheck(usize const &key_code_from,
                            usize const &key_code_to = -1,
-                           usize const &kind_code = -1) const;
-
+                           usize const &key_event_code = -1) const;
   }; // KeyMap
 
-  static void keyPress(usize const &key_code);
-  static void keyRelease(usize const &key_code);
-  static void keyFramework() noexcept;
+  static void event(sf::Event const &event);
+  static void framework();
 
   static usize getKeyCount() noexcept;
 
@@ -98,14 +94,14 @@ class KeyManager {
   KeyManager &operator=(KeyManager const &rhs) = delete;
   ~KeyManager() = delete;
 
+  static void press(sf::Event::KeyEvent const &key_event);
+  static void release(sf::Event::KeyEvent const &key_event);
+
   friend KeyMap &KeyMap::operator=(KeyMap const &) noexcept;
   friend KeyMap::~KeyMap() noexcept;
   friend void KeyMap::setKeyCount(usize const &);
-  static void link(KeyMap const *key_map) noexcept;
+  static void link(KeyMap const *const &key_map) noexcept;
   static void unlink() noexcept;
-
-  static void codeCheck(usize const &key_code,
-                        usize const &kind_code = -1);
 
   static std::vector<bool> key_state;
   static KeyMap const *key_map;

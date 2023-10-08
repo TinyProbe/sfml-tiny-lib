@@ -68,43 +68,61 @@ void Program::run() {
   // AnimeStore const &asd = anm1.getAnimes();
   // std::cout << asd[0][0].first.width << '\n';
 
-  sf::SoundBuffer sbf1, sbf2;
-  if (!sbf1.loadFromFile("res/sound/ereve.mp3")) {
-    throw std::runtime_error("sbf1 load failed!");
-  }
-  if (!sbf2.loadFromFile("res/sound/attack.mp3.flac")) {
-    throw std::runtime_error("sbf2 load failed!");
-  }
-  sf::Sound snd1, snd2;
+  WrapSoundBuffer sbf1("res/sound/ereve.mp3");
+  WrapSoundBuffer sbf2("res/sound/attack.mp3.flac");
+  sf::Sound snd1(sbf1.getSoundBuffer());
+  sf::Sound snd2(sbf2.getSoundBuffer());
   // background music
-  snd1.setBuffer(sbf1);
   snd1.setVolume(100);
   snd1.setLoop(true);
   snd1.play();
   // attack sound
-  snd2.setBuffer(sbf2);
   snd2.setVolume(100);
   snd2.setLoop(false);
 
-  // key manager & key map
+  // KeyMap
   KeyManager::KeyMap kmap(sf::Keyboard::KeyCount);
   KeyManager::setKeyMap(&kmap);
-  kmap.setCallback(sf::Keyboard::Escape, KeyManager::kPress, [&]() {
+  kmap.setKeyCallback(sf::Keyboard::Escape, KeyManager::kPress, [&]() {
     window.close();
   });
-  kmap.setCallback(sf::Keyboard::Hyphen, KeyManager::kPress, [&]() {
+  kmap.setKeyCallback(sf::Keyboard::Hyphen, KeyManager::kPress, [&]() {
     snd1.setVolume(fmax(snd1.getVolume() - 3, 0));
   }, true);
-  kmap.setCallback(sf::Keyboard::Equal, KeyManager::kPress, [&]() {
+  kmap.setKeyCallback(sf::Keyboard::Equal, KeyManager::kPress, [&]() {
     snd1.setVolume(fmin(snd1.getVolume() + 3, 100));
   }, true);
-  kmap.setCallback(sf::Keyboard::LBracket, KeyManager::kPress, [&]() {
+  kmap.setKeyCallback(sf::Keyboard::LBracket, KeyManager::kPress, [&]() {
     snd1.setPlayingOffset(snd1.getPlayingOffset() - sf::seconds(2));
   }, true);
-  kmap.setCallback(sf::Keyboard::RBracket, KeyManager::kPress, [&]() {
+  kmap.setKeyCallback(sf::Keyboard::RBracket, KeyManager::kPress, [&]() {
     snd1.setPlayingOffset(snd1.getPlayingOffset() + sf::seconds(2));
   }, true);
-  kmap.setCallback(sf::Keyboard::Space, KeyManager::kPress, [&]() {
+  kmap.setKeyCallback(sf::Keyboard::Space, KeyManager::kPress, [&]() {
+    snd2.play();
+  });
+
+  // MouseMap
+  MouseManager::ButtonMap bmap(sf::Mouse::ButtonCount);
+  MouseManager::setButtonMap(&bmap);
+  MouseManager::setMouseEventCallback(
+      MouseManager::kVerScrollUp, [&](int x, int y) {
+    snd2.play();
+  });
+  MouseManager::setMouseEventCallback(
+      MouseManager::kVerScrollDown, [&](int x, int y) {
+    snd2.play();
+  });
+  bmap.setButtonCallback(
+      sf::Mouse::Left, MouseManager::kPress, [&](int x, int y) {
+    snd2.play();
+  });
+  bmap.setButtonCallback(
+      sf::Mouse::Middle, MouseManager::kPress, [&](int x, int y) {
+    snd2.play();
+  });
+  bmap.setButtonCallback(
+      sf::Mouse::Right, MouseManager::kPress, [&](int x, int y) {
     snd2.play();
   });
 
@@ -114,13 +132,16 @@ void Program::run() {
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
         window.close();
-      } else if (event.type == sf::Event::KeyPressed) {
-        KeyManager::keyPress(event.key.code);
-      } else if (event.type == sf::Event::KeyReleased) {
-        KeyManager::keyRelease(event.key.code);
+      } else if (event.type >= sf::Event::KeyPressed &&
+                 event.type <= sf::Event::KeyReleased) {
+        KeyManager::event(event);
+      } else if (event.type >= sf::Event::MouseWheelMoved &&
+                 event.type <= sf::Event::MouseLeft) {
+        MouseManager::event(event);
       }
     }
-    KeyManager::keyFramework();
+    KeyManager::framework();
+    MouseManager::framework(window);
     txt1.setString(std::to_string(FPSManager::getCurrentFPS()));
 
     spr1.setRotation(usize(spr1.getRotation() + 1.0f) % 360);

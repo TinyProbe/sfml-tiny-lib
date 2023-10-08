@@ -4,14 +4,15 @@ OK
 OK
 - apply ownership pattern.
 OK
-- check Sound/SoundBuffer.
-...
+- WrapSoundBuffer.
+OK
 - MouseManager.
+...
 - ResourceManager.
 - ObjectManager.
-- Object.
-OK
-  - BackGround.
+- Object. (need arrange)
+...
+  - BackGround. (need arrange)
   ...
   - Structure.
   - Terrain.

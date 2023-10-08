@@ -24,7 +24,7 @@ class WrapTexture {
   virtual WrapTexture &operator=(WrapTexture const &rhs) noexcept;
   virtual ~WrapTexture() noexcept;
 
-  virtual WrapTexture clone();
+  virtual WrapTexture clone() const;
 
   virtual sf::Texture &getTexture();
   virtual sf::Texture const &getTexture() const;
@@ -72,14 +72,13 @@ class WrapTexture {
   struct Inner {
     sf::Texture texture;
 
-    virtual Inner &operator=(Inner const &rhs) {
-      if (this == &rhs) { return *this; }
-      this->texture = rhs.texture;
-      return *this;
-    }
+    explicit Inner();
+    explicit Inner(Inner const &rhs);
+    virtual Inner &operator=(Inner const &rhs);
   } *ownership;
 
  private:
+  explicit WrapTexture(WrapTexture::Inner *const &ownership) noexcept;
   virtual void ownershipCheck() const;
 
 }; // WrapTexture

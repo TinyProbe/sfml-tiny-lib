@@ -35,13 +35,9 @@ SpriteGenerator::~SpriteGenerator() noexcept {
   if (ownership != nullptr) { delete ownership; }
 }
 
-SpriteGenerator SpriteGenerator::clone() {
-  SpriteGenerator result(*this);
-  if (result.ownership != nullptr) {
-    ownership = new SpriteGenerator::Inner();
-    *ownership = *result.ownership;
-  }
-  return SpriteGenerator(result);
+SpriteGenerator SpriteGenerator::clone() const {
+  this->ownershipCheck();
+  return SpriteGenerator(new SpriteGenerator::Inner(*ownership));
 }
 
 WrapTexture SpriteGenerator::generateSpriteSheet() const {
@@ -206,6 +202,26 @@ void SpriteGenerator::flipVertically() {
       image.flipVertically();
     }
   }
+}
+
+SpriteGenerator::Inner::Inner() {
+}
+
+SpriteGenerator::Inner::Inner(SpriteGenerator::Inner const &rhs) {
+  *this = rhs;
+}
+
+SpriteGenerator::Inner &SpriteGenerator::Inner::operator=(
+    SpriteGenerator::Inner const &rhs) {
+  if (this == &rhs) { return *this; }
+  this->images_store.assign(rhs.images_store.begin(),
+                            rhs.images_store.end());
+  return *this;
+}
+
+SpriteGenerator::SpriteGenerator(
+    SpriteGenerator::Inner *const &ownership) noexcept
+    : ownership(ownership) {
 }
 
 void SpriteGenerator::ownershipCheck() const {

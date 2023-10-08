@@ -1,16 +1,6 @@
 #include "dev/object/Object.hpp"
 
 Object::Object() noexcept {
-  ownership->z = 1.0f;
-  ownership->visible = true;
-  ownership->animation = nullptr;
-}
-
-Object::Object(sf::Texture const &texture, bool resetRect) noexcept {
-  ownership->sprite.setTexture(texture, resetRect);
-  ownership->z = 1.0f;
-  ownership->visible = true;
-  ownership->animation = nullptr;
 }
 
 Object::~Object() noexcept {
@@ -54,6 +44,29 @@ bool const &Object::isVisible() const {
 void Object::setVisible(bool const &visible) {
   this->ownershipCheck();
   ownership->visible = visible;
+}
+
+Object::Inner::Inner()
+    : z(1.0f),
+      visible(true),
+      animation() {
+}
+
+Object::Inner::Inner(Object::Inner const &rhs) {
+  *this = rhs;
+}
+
+Object::Inner &Object::Inner::operator=(Object::Inner const &rhs) {
+  if (this == &rhs) { return *this; }
+  this->sprite = rhs.sprite;
+  this->animation = rhs.animation;
+  this->z = rhs.z;
+  this->visible = rhs.visible;
+  return *this;
+}
+
+Object::Object(Object::Inner *const &ownership)
+    : ownership(ownership) {
 }
 
 void Object::ownershipCheck() const {

@@ -21,7 +21,7 @@ class SpriteGenerator {
   virtual SpriteGenerator &operator=(SpriteGenerator const &rhs) noexcept;
   virtual ~SpriteGenerator() noexcept;
 
-  virtual SpriteGenerator clone();
+  virtual SpriteGenerator clone() const;
 
   virtual WrapTexture generateSpriteSheet() const;
 
@@ -68,15 +68,13 @@ class SpriteGenerator {
   struct Inner {
     WrapImagesStore images_store;
 
-    virtual Inner &operator=(Inner const &rhs) {
-      if (this == &rhs) { return *this; }
-      this->images_store.assign(rhs.images_store.begin(),
-                                rhs.images_store.end());
-      return *this;
-    }
+    explicit Inner();
+    explicit Inner(Inner const &rhs);
+    virtual Inner &operator=(Inner const &rhs);
   } *ownership;
 
  private:
+  explicit SpriteGenerator(SpriteGenerator::Inner *const &ownership) noexcept;
   virtual void ownershipCheck() const;
   virtual void codeCheck(usize const &images_code,
                          usize const &image_code = -1) const;

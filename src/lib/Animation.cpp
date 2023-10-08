@@ -31,13 +31,9 @@ Animation::~Animation() noexcept {
   if (ownership != nullptr) { delete ownership; }
 }
 
-Animation Animation::clone() {
-  Animation result(*this);
-  if (result.ownership != nullptr) {
-    ownership = new Animation::Inner();
-    *ownership = *result.ownership;
-  }
-  return Animation(result);
+Animation Animation::clone() const {
+  this->ownershipCheck();
+  return Animation(new Animation::Inner(*ownership));
 }
 
 usize Animation::getAnimeCount() const {
@@ -92,6 +88,23 @@ void Animation::setMotion(usize const &anime_code,
                           Motion const &motion) {
   this->codeCheck(anime_code, motion_code);
   ownership->animes[anime_code][motion_code] = motion;
+}
+
+Animation::Inner::Inner() {
+}
+
+Animation::Inner::Inner(Animation::Inner const &rhs) {
+  *this = rhs;
+}
+
+Animation::Inner &Animation::Inner::operator=(Animation::Inner const &rhs) {
+  if (this == &rhs) { return *this; }
+  this->animes.assign(rhs.animes.begin(), rhs.animes.end());
+  return *this;
+}
+
+Animation::Animation(Animation::Inner *const &ownership) noexcept
+    : ownership(ownership) {
 }
 
 void Animation::ownershipCheck() const {

@@ -1,5 +1,5 @@
-#ifndef AUTO_IMAGE_HPP_
-#define AUTO_IMAGE_HPP_
+#ifndef WRAP_IMAGE_HPP_
+#define WRAP_IMAGE_HPP_
 
 #include <SFML/Graphics.hpp>
 
@@ -17,7 +17,7 @@ class WrapImage {
   virtual WrapImage &operator=(WrapImage const &rhs) noexcept;
   virtual ~WrapImage() noexcept;
 
-  virtual WrapImage clone();
+  virtual WrapImage clone() const;
 
   virtual sf::Image &getImage();
   virtual sf::Image const &getImage() const;
@@ -59,16 +59,14 @@ class WrapImage {
   struct Inner {
     sf::Image image;
 
-    virtual Inner &operator=(Inner const &rhs) {
-      if (this == &rhs) { return *this; }
-      this->image = rhs.image;
-      return *this;
-    }
+    explicit Inner();
+    explicit Inner(Inner const &rhs);
+    virtual Inner &operator=(Inner const &rhs);
   } *ownership;
 
  private:
+  explicit WrapImage(WrapImage::Inner *const &ownership) noexcept;
   virtual void ownershipCheck() const;
-
 }; // WrapImage
 
 #endif

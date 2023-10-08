@@ -48,13 +48,9 @@ WrapTexture::~WrapTexture() noexcept {
   if (ownership != nullptr) { delete ownership; }
 }
 
-WrapTexture WrapTexture::clone() {
-  WrapTexture result(*this);
-  if (result.ownership != nullptr) {
-    ownership = new WrapTexture::Inner();
-    *ownership = *result.ownership;
-  }
-  return WrapTexture(result);
+WrapTexture WrapTexture::clone() const {
+  this->ownershipCheck();
+  return WrapTexture(new WrapTexture::Inner(*ownership));
 }
 
 sf::Texture &WrapTexture::getTexture() {
@@ -199,6 +195,24 @@ void WrapTexture::update(sf::Window const &window) {
 void WrapTexture::update(sf::Window const &window, u32 x, u32 y) {
   this->ownershipCheck();
   ownership->texture.update(window, x, y);
+}
+
+WrapTexture::Inner::Inner() {
+}
+
+WrapTexture::Inner::Inner(WrapTexture::Inner const &rhs) {
+  *this = rhs;
+}
+
+WrapTexture::Inner &WrapTexture::Inner::operator=(
+    WrapTexture::Inner const &rhs) {
+  if (this == &rhs) { return *this; }
+  this->texture = rhs.texture;
+  return *this;
+}
+
+WrapTexture::WrapTexture(WrapTexture::Inner *const &ownership) noexcept
+    : ownership(ownership) {
 }
 
 void WrapTexture::ownershipCheck() const {

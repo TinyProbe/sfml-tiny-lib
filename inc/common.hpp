@@ -16,16 +16,17 @@
 
 // dev
 #include "dev/Program.hpp"
-#include "dev/object/Object.hpp"
 #include "dev/object/Background.hpp"
 
 // lib
 #include "lib/Animation.hpp"
 #include "lib/FPSManager.hpp"
 #include "lib/KeyManager.hpp"
+#include "lib/MouseManager.hpp"
 #include "lib/SpriteGenerator.hpp"
 #include "lib/WrapImage.hpp"
 #include "lib/WrapTexture.hpp"
+#include "lib/WrapSoundBuffer.hpp"
 
 using i8 = char;
 using i16 = short;

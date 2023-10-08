@@ -43,13 +43,9 @@ WrapImage::~WrapImage() noexcept {
   if (ownership != nullptr) { delete ownership; }
 }
 
-WrapImage WrapImage::clone() {
-  WrapImage result(*this);
-  if (result.ownership != nullptr) {
-    ownership = new WrapImage::Inner();
-    *ownership = *result.ownership;
-  }
-  return WrapImage(result);
+WrapImage WrapImage::clone() const {
+  this->ownershipCheck();
+  return WrapImage(new WrapImage::Inner(*ownership));
 }
 
 sf::Image &WrapImage::getImage() {
@@ -163,6 +159,23 @@ void WrapImage::flipHorizontally() {
 void WrapImage::flipVertically() {
   this->ownershipCheck();
   ownership->image.flipVertically();
+}
+
+WrapImage::Inner::Inner() {
+}
+
+WrapImage::Inner::Inner(WrapImage::Inner const &rhs) {
+  *this = rhs;
+}
+
+WrapImage::Inner &WrapImage::Inner::operator=(WrapImage::Inner const &rhs) {
+  if (this == &rhs) { return *this; }
+  this->image = rhs.image;
+  return *this;
+}
+
+WrapImage::WrapImage(WrapImage::Inner *const &ownership) noexcept
+    : ownership(ownership) {
 }
 
 void WrapImage::ownershipCheck() const {

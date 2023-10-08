@@ -10,7 +10,6 @@ class Animation;
 class Object {
  public:
   explicit Object() noexcept;
-  explicit Object(sf::Texture const &texture, bool resetRect = false) noexcept;
   explicit Object(Object const &rhs) = delete;
   Object &operator=(Object const &rhs) = delete;
   virtual ~Object() noexcept;
@@ -39,19 +38,14 @@ class Object {
     f32 z;
     bool visible;
 
-    virtual Inner &operator=(Inner const &rhs) {
-      if (this == &rhs) { return *this; }
-      this->sprite = rhs.sprite;
-      this->animation = rhs.animation;
-      this->z = rhs.z;
-      this->visible = rhs.visible;
-      return *this;
-    }
+    explicit Inner();
+    explicit Inner(Inner const &rhs);
+    virtual Inner &operator=(Inner const &rhs);
   } *ownership;
 
  private:
+  explicit Object(Object::Inner *const &ownership);
   virtual void ownershipCheck() const;
-
 }; // Object
 
 #endif

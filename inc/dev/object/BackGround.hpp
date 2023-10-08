@@ -7,9 +7,9 @@ class Background : public Object {
  public:
   explicit Background();
   explicit Background(sf::Texture const &texture, bool resetRect = false);
-  explicit Background(Background const &rhs);
-  virtual Background &operator=(Background const &rhs);
-  virtual ~Background();
+  explicit Background(Background const &rhs) noexcept;
+  virtual Background &operator=(Background const &rhs) noexcept;
+  virtual ~Background() noexcept;
 
   virtual Background clone() const;
 
@@ -20,17 +20,15 @@ class Background : public Object {
 
  protected:
   struct Inner : public Object::Inner {
-    virtual Inner &operator=(Inner const &rhs) {
-      if (this == &rhs) { return *this; }
-      dynamic_cast<Object::Inner &>(*this) =
-          dynamic_cast<Object::Inner const &>(rhs);
-      return *this;
-    }
+
+    explicit Inner();
+    explicit Inner(Inner const &rhs);
+    virtual Inner &operator=(Inner const &rhs);
   };
 
  private:
+  explicit Background(Background::Inner *const &ownership) noexcept;
   virtual void ownershipCheck() const override;
-
 };
 
 #endif
