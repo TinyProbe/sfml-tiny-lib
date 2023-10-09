@@ -1,5 +1,7 @@
 #include "lib/WrapSoundBuffer.hpp"
 
+#include <stdexcept>
+
 WrapSoundBuffer::WrapSoundBuffer()
     : ownership(new WrapSoundBuffer::Inner()) {
 }

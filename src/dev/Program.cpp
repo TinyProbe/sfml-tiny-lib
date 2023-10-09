@@ -15,7 +15,7 @@ void Program::run() {
   );
 
   // fps manager
-  FPSManager::setFramerateLimit(120);
+  FPSManager::setFramerateLimit(60);
 
   // fps counter
   sf::Font fnt1;
@@ -118,6 +118,10 @@ void Program::run() {
     snd2.play();
   });
   bmap.setButtonCallback(
+      sf::Mouse::Left, MouseManager::kRelease, [&](int x, int y) {
+    snd2.play();
+  });
+  bmap.setButtonCallback(
       sf::Mouse::Middle, MouseManager::kPress, [&](int x, int y) {
     snd2.play();
   });
@@ -135,7 +139,7 @@ void Program::run() {
       } else if (event.type >= sf::Event::KeyPressed &&
                  event.type <= sf::Event::KeyReleased) {
         KeyManager::event(event);
-      } else if (event.type >= sf::Event::MouseWheelMoved &&
+      } else if (event.type >= sf::Event::MouseWheelScrolled &&
                  event.type <= sf::Event::MouseLeft) {
         MouseManager::event(event);
       }

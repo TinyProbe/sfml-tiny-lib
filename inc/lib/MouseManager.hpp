@@ -90,12 +90,13 @@ class MouseManager {
   static void framework();
   static void framework(sf::WindowBase const &relativeTo);
 
-  static usize getButtonCount() noexcept;
-
-  static bool getButtonState(usize const &button_code);
+  static bool getIsEntered() noexcept;
 
   static ButtonMap const *const &getButtonMap() noexcept;
   static void setButtonMap(ButtonMap const *const &button_map);
+
+  static usize getButtonCount() noexcept;
+  static bool getButtonState(usize const &button_code);
 
   static ButtonCallback const &getMouseEventCallback(
       usize const &mouse_event_code);

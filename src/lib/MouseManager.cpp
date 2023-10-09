@@ -1,6 +1,7 @@
 #include "lib/MouseManager.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 #include <SFML/Window/Mouse.hpp>
 
@@ -180,7 +181,7 @@ void MouseManager::ButtonMap::codeCheck(usize const &button_code_from,
 }
 
 // MouseManaer
-bool MouseManager::is_entered = false;
+bool MouseManager::is_entered = true;
 MouseManager::ButtonMap const *MouseManager::button_map = nullptr;
 std::vector<bool> MouseManager::button_state;
 std::vector<ButtonCallback> MouseManager::mouse_event_callbacks(
@@ -230,16 +231,8 @@ void MouseManager::framework(sf::WindowBase const &relativeTo) {
   }
 }
 
-usize MouseManager::getButtonCount() noexcept {
-  return MouseManager::button_state.size();
-}
-
-bool MouseManager::getButtonState(usize const &button_code) {
-  if (MouseManager::button_map == nullptr) {
-    throw std::runtime_error("No linked any ButtonMap.");
-  }
-  MouseManager::button_map->codeCheck(button_code);
-  return MouseManager::button_state[button_code];
+bool MouseManager::getIsEntered() noexcept {
+  return MouseManager::is_entered;
 }
 
 MouseManager::ButtonMap const *const &MouseManager::getButtonMap() noexcept {
@@ -256,6 +249,18 @@ void MouseManager::setButtonMap(
     MouseManager::button_state.resize(button_map->getButtonCount());
     const_cast<MouseManager::ButtonMap *>(MouseManager::button_map)->link();
   }
+}
+
+usize MouseManager::getButtonCount() noexcept {
+  return MouseManager::button_state.size();
+}
+
+bool MouseManager::getButtonState(usize const &button_code) {
+  if (MouseManager::button_map == nullptr) {
+    throw std::runtime_error("No linked any ButtonMap.");
+  }
+  MouseManager::button_map->codeCheck(button_code);
+  return MouseManager::button_state[button_code];
 }
 
 ButtonCallback const &MouseManager::getMouseEventCallback(
