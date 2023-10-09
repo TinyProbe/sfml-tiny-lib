@@ -257,7 +257,7 @@ void KeyManager::press(sf::Event::KeyEvent const &key_event) {
         KeyManager::key_map_->canRepeat(key_event.code)) {
       KeyCallback const &callback =
           KeyManager::key_map_->getKeyCallback(key_event.code,
-                                              KeyManager::kPress);
+                                               KeyManager::kPress);
       if (callback) { callback(); }
     }
   }
@@ -270,7 +270,7 @@ void KeyManager::release(sf::Event::KeyEvent const &key_event) {
     KeyManager::key_map_->codeCheck(key_event.code);
     KeyCallback const &callback =
         KeyManager::key_map_->getKeyCallback(key_event.code,
-                                            KeyManager::kRelease);
+                                             KeyManager::kRelease);
     if (callback) { callback(); }
   }
   KeyManager::key_state_[key_event.code] = false;

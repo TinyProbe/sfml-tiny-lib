@@ -80,7 +80,7 @@ ButtonCallback const &MouseManager::ButtonMap::getButtonCallback(
 void MouseManager::ButtonMap::setButtonCallback(usize const &button_code,
                                                 usize const &button_event_code,
                                                 ButtonCallback const &callback
-                                                ) {
+) {
   this->codeCheck(button_code, usize(-1), button_event_code);
   ownership->callbacks_[button_code][button_event_code] = callback;
 }
@@ -88,7 +88,7 @@ void MouseManager::ButtonMap::setButtonCallback(usize const &button_code,
 void MouseManager::ButtonMap::copyButtonCallback(usize const &button_code_from,
                                                  usize const &button_code_to,
                                                  usize const &button_event_code
-                                                 ) {
+) {
   this->codeCheck(button_code_from, button_code_to, button_event_code);
   ownership->callbacks_[button_code_to][button_event_code] =
       ownership->callbacks_[button_code_from][button_event_code];
@@ -97,7 +97,7 @@ void MouseManager::ButtonMap::copyButtonCallback(usize const &button_code_from,
 void MouseManager::ButtonMap::moveButtonCallback(usize const &button_code_from,
                                                  usize const &button_code_to,
                                                  usize const &button_event_code
-                                                 ) {
+) {
   this->codeCheck(button_code_from, button_code_to, button_event_code);
   ownership->callbacks_[button_code_to][button_event_code] =
       std::move(ownership->callbacks_[button_code_from][button_event_code]);
@@ -107,7 +107,7 @@ void MouseManager::ButtonMap::moveButtonCallback(usize const &button_code_from,
 void MouseManager::ButtonMap::swapButtonCallback(usize const &button_code_from,
                                                  usize const &button_code_to,
                                                  usize const &button_event_code
-                                                 ) {
+) {
   this->codeCheck(button_code_from, button_code_to, button_event_code);
   ButtonCallback tmp =
       std::move(ownership->callbacks_[button_code_to][button_event_code]);
@@ -306,7 +306,7 @@ void MouseManager::press(
     MouseManager::button_map_->codeCheck(button_event.button);
     ButtonCallback const &callback =
         MouseManager::button_map_->getButtonCallback(button_event.button,
-                                                    MouseManager::kPress);
+                                                     MouseManager::kPress);
     if (callback) { callback(button_event.x, button_event.y); }
   }
   MouseManager::button_state_[button_event.button] = true;
@@ -318,7 +318,7 @@ void MouseManager::release(
     MouseManager::button_map_->codeCheck(button_event.button);
     ButtonCallback const &callback =
         MouseManager::button_map_->getButtonCallback(button_event.button,
-                                                    MouseManager::kRelease);
+                                                     MouseManager::kRelease);
     if (callback) { callback(button_event.x, button_event.y); }
   }
   MouseManager::button_state_[button_event.button] = false;

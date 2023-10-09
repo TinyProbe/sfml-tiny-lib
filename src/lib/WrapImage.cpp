@@ -103,8 +103,8 @@ void WrapImage::copy(sf::Image const &source,
     ownership->image_.create(destX + size.x, destY + size.y, sf::Color::Black);
   } else {
     ownership->image_.create(destX + sourceRect.width,
-                            destY + sourceRect.height,
-                            sf::Color::Black);
+                             destY + sourceRect.height,
+                             sf::Color::Black);
   }
   ownership->image_.copy(source, destX, destY, sourceRect, applyAlpha);
 }

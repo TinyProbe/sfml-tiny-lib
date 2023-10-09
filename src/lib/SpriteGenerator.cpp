@@ -52,9 +52,9 @@ WrapTexture SpriteGenerator::generateSpriteSheet() const {
     for (WrapImage const &image : images) {
       sf::Vector2u const &size = image.getSize();
       animes.back().push_back(
-        sf::IntRect({
-          i32(current_width), i32(total_height), i32(size.x), i32(size.y),
-        })
+          sf::IntRect({
+            i32(current_width), i32(total_height), i32(size.x), i32(size.y),
+          })
       );
       current_width += size.x;
       current_height = std::max(current_height, total_height + usize(size.y));
@@ -215,7 +215,7 @@ SpriteGenerator::Inner &SpriteGenerator::Inner::operator=(
     SpriteGenerator::Inner const &rhs) {
   if (this == &rhs) { return *this; }
   this->images_store_.assign(rhs.images_store_.begin(),
-                            rhs.images_store_.end());
+                             rhs.images_store_.end());
   return *this;
 }
 
