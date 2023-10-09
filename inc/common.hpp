@@ -16,7 +16,10 @@
 
 // dev
 #include "dev/Program.hpp"
-#include "dev/object/Background.hpp"
+#include "dev/object/Object.hpp"
+#include "dev/object/Visible.hpp"
+#include "dev/object/Hearable.hpp"
+#include "dev/object/Collidable.hpp"
 
 // lib
 #include "lib/Animation.hpp"

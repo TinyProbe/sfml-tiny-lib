@@ -1,0 +1,17 @@
+#include "dev/object/Hearable.hpp"
+
+Hearable::Inner::Inner()
+    : Object::Inner() {
+}
+
+Hearable::Inner::Inner(Hearable::Inner const &rhs) {
+  *this = rhs;
+}
+
+Hearable::Inner &Hearable::Inner::operator=(Hearable::Inner const &rhs) {
+  if (this == &rhs) { return *this; }
+  dynamic_cast<Object::Inner &>(*this) =
+      dynamic_cast<Object::Inner const &>(rhs);
+
+  return *this;
+}

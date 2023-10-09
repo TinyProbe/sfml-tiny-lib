@@ -23,7 +23,7 @@ WrapImage::WrapImage(sf::InputStream &stream)
 
 WrapImage::WrapImage(sf::Image const &image)
     : ownership(new WrapImage::Inner()) {
-  ownership->image = image;
+  ownership->image_ = image;
 }
 
 WrapImage::WrapImage(WrapImage const &rhs) noexcept
@@ -50,46 +50,46 @@ WrapImage WrapImage::clone() const {
 
 sf::Image &WrapImage::getImage() {
   this->ownershipCheck();
-  return ownership->image;
+  return ownership->image_;
 }
 
 sf::Image const &WrapImage::getImage() const {
   this->ownershipCheck();
-  return ownership->image;
+  return ownership->image_;
 }
 
 sf::Vector2u WrapImage::getSize() const {
   this->ownershipCheck();
-  return ownership->image.getSize();
+  return ownership->image_.getSize();
 }
 
 sf::Color WrapImage::getPixel(u32 x, u32 y) const {
   this->ownershipCheck();
-  return ownership->image.getPixel(x, y);
+  return ownership->image_.getPixel(x, y);
 }
 
 void WrapImage::setPixel(u32 x, u32 y, sf::Color const &color) {
   this->ownershipCheck();
-  ownership->image.setPixel(x, y, color);
+  ownership->image_.setPixel(x, y, color);
 }
 
 sf::Uint8 const *WrapImage::getPixelsPtr() const {
   this->ownershipCheck();
-  return ownership->image.getPixelsPtr();
+  return ownership->image_.getPixelsPtr();
 }
 
 void WrapImage::create(usize const &width,
                        usize const &height,
                        sf::Color const &color) {
   this->ownershipCheck();
-  ownership->image.create(width, height, color);
+  ownership->image_.create(width, height, color);
 }
 
 void WrapImage::create(usize const &width,
                        usize const &height,
                        sf::Uint8 const *pixels) {
   this->ownershipCheck();
-  ownership->image.create(width, height, pixels);
+  ownership->image_.create(width, height, pixels);
 }
 
 void WrapImage::copy(sf::Image const &source,
@@ -100,39 +100,39 @@ void WrapImage::copy(sf::Image const &source,
   this->ownershipCheck();
   if (sourceRect == sf::IntRect(0, 0, 0, 0)) {
     sf::Vector2u size = source.getSize();
-    ownership->image.create(destX + size.x, destY + size.y, sf::Color::Black);
+    ownership->image_.create(destX + size.x, destY + size.y, sf::Color::Black);
   } else {
-    ownership->image.create(destX + sourceRect.width,
+    ownership->image_.create(destX + sourceRect.width,
                             destY + sourceRect.height,
                             sf::Color::Black);
   }
-  ownership->image.copy(source, destX, destY, sourceRect, applyAlpha);
+  ownership->image_.copy(source, destX, destY, sourceRect, applyAlpha);
 }
 
 void WrapImage::loadFromFile(std::string const &filename) {
   this->ownershipCheck();
-  if (!ownership->image.loadFromFile(filename)) {
+  if (!ownership->image_.loadFromFile(filename)) {
     throw std::runtime_error(std::string("load from file failed: ") + filename);
   }
 }
 
 void WrapImage::loadFromMemory(void const *data, usize size) {
   this->ownershipCheck();
-  if (!ownership->image.loadFromMemory(data, size)) {
+  if (!ownership->image_.loadFromMemory(data, size)) {
     throw std::runtime_error("load from memory failed");
   }
 }
 
 void WrapImage::loadFromStream(sf::InputStream &stream) {
   this->ownershipCheck();
-  if (!ownership->image.loadFromStream(stream)) {
+  if (!ownership->image_.loadFromStream(stream)) {
     throw std::runtime_error("load from stream failed");
   }
 }
 
 void WrapImage::saveToFile(std::string const &filename) const {
   this->ownershipCheck();
-  if (!ownership->image.saveToFile(filename)) {
+  if (!ownership->image_.saveToFile(filename)) {
     throw std::runtime_error("save to file failed");
   }
 }
@@ -140,7 +140,7 @@ void WrapImage::saveToFile(std::string const &filename) const {
 void WrapImage::saveToMemory(std::vector<sf::Uint8> &output,
                              std::string const &format) const {
   this->ownershipCheck();
-  if (!ownership->image.saveToMemory(output, format)) {
+  if (!ownership->image_.saveToMemory(output, format)) {
     throw std::runtime_error("save to memory failed");
   }
 }
@@ -148,17 +148,17 @@ void WrapImage::saveToMemory(std::vector<sf::Uint8> &output,
 void WrapImage::createMaskFromColor(sf::Color const &color,
                                     sf::Uint8 alpha) {
   this->ownershipCheck();
-  ownership->image.createMaskFromColor(color, alpha);
+  ownership->image_.createMaskFromColor(color, alpha);
 }
 
 void WrapImage::flipHorizontally() {
   this->ownershipCheck();
-  ownership->image.flipHorizontally();
+  ownership->image_.flipHorizontally();
 }
 
 void WrapImage::flipVertically() {
   this->ownershipCheck();
-  ownership->image.flipVertically();
+  ownership->image_.flipVertically();
 }
 
 WrapImage::Inner::Inner() {
@@ -170,7 +170,7 @@ WrapImage::Inner::Inner(WrapImage::Inner const &rhs) {
 
 WrapImage::Inner &WrapImage::Inner::operator=(WrapImage::Inner const &rhs) {
   if (this == &rhs) { return *this; }
-  this->image = rhs.image;
+  this->image_ = rhs.image_;
   return *this;
 }
 

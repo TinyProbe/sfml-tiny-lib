@@ -57,7 +57,7 @@ class WrapImage {
 
  protected:
   struct Inner {
-    sf::Image image;
+    sf::Image image_;
 
     explicit Inner();
     explicit Inner(Inner const &rhs);

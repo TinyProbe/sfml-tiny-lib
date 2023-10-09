@@ -5,26 +5,26 @@
 
 using f32 = float;
 
-class Animation;
-
 class Object {
  public:
-  explicit Object() noexcept;
+  explicit Object() = delete;
   explicit Object(Object const &rhs) = delete;
   Object &operator=(Object const &rhs) = delete;
-  virtual ~Object() noexcept;
+  ~Object() = delete;
 
-  virtual sf::Sprite &getSprite();
-  virtual sf::Sprite const &getSprite() const;
-
-  virtual Animation const *const &getAnimation() const;
-  virtual void setAnimation(Animation const *const &animation);
-
-  virtual f32 const &getZ() const;
-  virtual void setZ(f32 const &z);
-
-  virtual bool const &isVisible() const;
-  virtual void setVisible(bool const &visible);
+  virtual sf::Vector2f const &getPosition() const;
+  virtual f32 const &getZDepth() const;
+  virtual f32 const &getRotation() const;
+  virtual sf::Vector2f const &getScale() const;
+  virtual sf::Vector2f const &getOrigin() const;
+  virtual void setPosition(f32 x, f32 y);
+  virtual void setPosition(sf::Vector2f const &position);
+  virtual void setZDepth(f32 const &z_depth);
+  virtual void setRotation(f32 const &angle);
+  virtual void setScale(f32 factor_x, f32 factor_y);
+  virtual void setScale(sf::Vector2f const &factor);
+  virtual void setOrigin(f32 x, f32 y);
+  virtual void setOrigin(sf::Vector2f const &origin);
 
   virtual void initialize() = 0;
   virtual void update() = 0;
@@ -33,10 +33,11 @@ class Object {
 
  protected:
   struct Inner {
-    sf::Sprite sprite;
-    Animation const *animation;
-    f32 z;
-    bool visible;
+    sf::Vector2f position_;
+    f32 z_depth_;
+    f32 rotation_;
+    sf::Vector2f scale_;
+    sf::Vector2f origin_;
 
     explicit Inner();
     explicit Inner(Inner const &rhs);
@@ -44,8 +45,8 @@ class Object {
   } *ownership;
 
  private:
-  explicit Object(Object::Inner *const &ownership);
-  virtual void ownershipCheck() const;
+  explicit Object(Object::Inner *const &ownership) = delete;
+  virtual void ownershipCheck() const = 0;
 }; // Object
 
 #endif

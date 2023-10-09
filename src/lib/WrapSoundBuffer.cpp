@@ -31,7 +31,7 @@ WrapSoundBuffer::WrapSoundBuffer(sf::Int16 const *samples,
 
 WrapSoundBuffer::WrapSoundBuffer(sf::SoundBuffer const &sound_buffer)
     : ownership(new WrapSoundBuffer::Inner()) {
-  ownership->sound_buffer = sound_buffer;
+  ownership->sound_buffer_ = sound_buffer;
 }
 
 WrapSoundBuffer::WrapSoundBuffer(WrapSoundBuffer const &rhs) noexcept
@@ -59,17 +59,17 @@ WrapSoundBuffer WrapSoundBuffer::clone() const {
 
 sf::SoundBuffer &WrapSoundBuffer::getSoundBuffer() {
   this->ownershipCheck();
-  return ownership->sound_buffer;
+  return ownership->sound_buffer_;
 }
 
 sf::SoundBuffer const &WrapSoundBuffer::getSoundBuffer() const {
   this->ownershipCheck();
-  return ownership->sound_buffer;
+  return ownership->sound_buffer_;
 }
 
 void WrapSoundBuffer::loadFromFile(std::string const &filename) {
   this->ownershipCheck();
-  if (!ownership->sound_buffer.loadFromFile(filename)) {
+  if (!ownership->sound_buffer_.loadFromFile(filename)) {
     throw std::runtime_error(std::string("load from file failed: ") + filename);
   }
 }
@@ -77,14 +77,14 @@ void WrapSoundBuffer::loadFromFile(std::string const &filename) {
 void WrapSoundBuffer::loadFromMemory(void const *data,
                                      std::size_t sizeInBytes) {
   this->ownershipCheck();
-  if (!ownership->sound_buffer.loadFromMemory(data, sizeInBytes)) {
+  if (!ownership->sound_buffer_.loadFromMemory(data, sizeInBytes)) {
     throw std::runtime_error("load from memory failed");
   }
 }
 
 void WrapSoundBuffer::loadFromStream(sf::InputStream &stream) {
   this->ownershipCheck();
-  if (!ownership->sound_buffer.loadFromStream(stream)) {
+  if (!ownership->sound_buffer_.loadFromStream(stream)) {
     throw std::runtime_error("load from stream failed");
   }
 }
@@ -94,7 +94,7 @@ void WrapSoundBuffer::loadFromSamples(sf::Int16 const *samples,
                                       u32 channelCount,
                                       u32 sampleRate) {
   this->ownershipCheck();
-  if (!ownership->sound_buffer.loadFromSamples(
+  if (!ownership->sound_buffer_.loadFromSamples(
         samples, sampleCount, channelCount, sampleRate)) {
     throw std::runtime_error("load from samples failed");
   }
@@ -102,34 +102,34 @@ void WrapSoundBuffer::loadFromSamples(sf::Int16 const *samples,
 
 void WrapSoundBuffer::saveToFile(std::string const &filename) const {
   this->ownershipCheck();
-  if (!ownership->sound_buffer.saveToFile(filename)) {
+  if (!ownership->sound_buffer_.saveToFile(filename)) {
     throw std::runtime_error("save to file failed");
   }
 }
 
 sf::Int16 const *WrapSoundBuffer::getSamples() const {
   this->ownershipCheck();
-  return ownership->sound_buffer.getSamples();
+  return ownership->sound_buffer_.getSamples();
 }
 
 sf::Uint64 WrapSoundBuffer::getSampleCount() const {
   this->ownershipCheck();
-  return ownership->sound_buffer.getSampleCount();
+  return ownership->sound_buffer_.getSampleCount();
 }
 
 u32 WrapSoundBuffer::getSampleRate() const {
   this->ownershipCheck();
-  return ownership->sound_buffer.getSampleRate();
+  return ownership->sound_buffer_.getSampleRate();
 }
 
 u32 WrapSoundBuffer::getChannelCount() const {
   this->ownershipCheck();
-  return ownership->sound_buffer.getChannelCount();
+  return ownership->sound_buffer_.getChannelCount();
 }
 
 sf::Time WrapSoundBuffer::getDuration() const {
   this->ownershipCheck();
-  return ownership->sound_buffer.getDuration();
+  return ownership->sound_buffer_.getDuration();
 }
 
 WrapSoundBuffer::Inner::Inner() {
@@ -142,7 +142,7 @@ WrapSoundBuffer::Inner::Inner(WrapSoundBuffer::Inner const &rhs) {
 WrapSoundBuffer::Inner &WrapSoundBuffer::Inner::operator=(
     WrapSoundBuffer::Inner const &rhs) {
   if (this == &rhs) { return *this; }
-  this->sound_buffer = rhs.sound_buffer;
+  this->sound_buffer_ = rhs.sound_buffer_;
   return *this;
 }
 

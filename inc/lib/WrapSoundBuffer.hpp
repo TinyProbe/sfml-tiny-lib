@@ -42,7 +42,7 @@ class WrapSoundBuffer {
 
  protected:
   struct Inner {
-    sf::SoundBuffer sound_buffer;
+    sf::SoundBuffer sound_buffer_;
 
     explicit Inner();
     explicit Inner(Inner const &rhs);

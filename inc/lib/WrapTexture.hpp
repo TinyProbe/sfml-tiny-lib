@@ -70,7 +70,7 @@ class WrapTexture {
 
  protected:
   struct Inner {
-    sf::Texture texture;
+    sf::Texture texture_;
 
     explicit Inner();
     explicit Inner(Inner const &rhs);

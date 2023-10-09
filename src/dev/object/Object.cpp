@@ -1,55 +1,63 @@
 #include "dev/object/Object.hpp"
 
-Object::Object() noexcept {
+sf::Vector2f const &Object::getPosition() const {
+  return ownership->position_;
 }
 
-Object::~Object() noexcept {
+f32 const &Object::getZDepth() const {
+  return ownership->z_depth_;
 }
 
-sf::Sprite &Object::getSprite() {
-  this->ownershipCheck();
-  return ownership->sprite;
+f32 const &Object::getRotation() const {
+  return ownership->rotation_;
 }
 
-sf::Sprite const &Object::getSprite() const {
-  this->ownershipCheck();
-  return ownership->sprite;
+sf::Vector2f const &Object::getScale() const {
+  return ownership->scale_;
 }
 
-Animation const *const &Object::getAnimation() const {
-  this->ownershipCheck();
-  return ownership->animation;
+sf::Vector2f const &Object::getOrigin() const {
+  return ownership->origin_;
 }
 
-void Object::setAnimation(Animation const *const &animation) {
-  this->ownershipCheck();
-  ownership->animation = animation;
+void Object::setPosition(f32 x, f32 y) {
+  ownership->position_ = sf::Vector2f(x, y);
 }
 
-f32 const &Object::getZ() const {
-  this->ownershipCheck();
-  return ownership->z;
+void Object::setPosition(sf::Vector2f const &position) {
+  ownership->position_ = position;
 }
 
-void Object::setZ(f32 const &z) {
-  this->ownershipCheck();
-  ownership->z = z;
+void Object::setZDepth(f32 const &z_depth) {
+  ownership->z_depth_ = z_depth;
 }
 
-bool const &Object::isVisible() const {
-  this->ownershipCheck();
-  return ownership->visible;
+void Object::setRotation(f32 const &angle) {
+  ownership->rotation_ = angle;
 }
 
-void Object::setVisible(bool const &visible) {
-  this->ownershipCheck();
-  ownership->visible = visible;
+void Object::setScale(f32 factor_x, f32 factor_y) {
+  ownership->scale_ = sf::Vector2f(factor_x, factor_y);
+}
+
+void Object::setScale(sf::Vector2f const &factor) {
+  ownership->scale_ = factor;
+}
+
+void Object::setOrigin(f32 x, f32 y) {
+  ownership->origin_ = sf::Vector2f(x, y);
+}
+
+void Object::setOrigin(sf::Vector2f const &origin) {
+  ownership->origin_ = origin;
 }
 
 Object::Inner::Inner()
-    : z(1.0f),
-      visible(true),
-      animation() {
+    : position_(),
+      z_depth_(),
+      rotation_(),
+      scale_(),
+      origin_() {
 }
 
 Object::Inner::Inner(Object::Inner const &rhs) {
@@ -58,19 +66,10 @@ Object::Inner::Inner(Object::Inner const &rhs) {
 
 Object::Inner &Object::Inner::operator=(Object::Inner const &rhs) {
   if (this == &rhs) { return *this; }
-  this->sprite = rhs.sprite;
-  this->animation = rhs.animation;
-  this->z = rhs.z;
-  this->visible = rhs.visible;
+  this->position_ = rhs.position_;
+  this->z_depth_ = rhs.z_depth_;
+  this->rotation_ = rhs.rotation_;
+  this->scale_ = rhs.scale_;
+  this->origin_ = rhs.origin_;
   return *this;
-}
-
-Object::Object(Object::Inner *const &ownership)
-    : ownership(ownership) {
-}
-
-void Object::ownershipCheck() const {
-  if (ownership == nullptr) {
-    throw std::runtime_error("No ownership rights whatsoever: Object");
-  }
 }

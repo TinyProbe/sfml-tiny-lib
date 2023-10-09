@@ -66,7 +66,7 @@ class SpriteGenerator {
 
  protected:
   struct Inner {
-    WrapImagesStore images_store;
+    WrapImagesStore images_store_;
 
     explicit Inner();
     explicit Inner(Inner const &rhs);

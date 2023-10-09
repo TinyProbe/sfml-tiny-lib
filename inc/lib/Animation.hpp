@@ -44,7 +44,7 @@ class Animation {
 
  protected:
   struct Inner {
-    AnimeStore animes;
+    AnimeStore animes_;
 
     explicit Inner();
     explicit Inner(Inner const &rhs);

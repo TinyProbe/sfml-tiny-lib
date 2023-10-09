@@ -117,18 +117,6 @@ void Program::run() {
       sf::Mouse::Left, MouseManager::kPress, [&](int x, int y) {
     snd2.play();
   });
-  bmap.setButtonCallback(
-      sf::Mouse::Left, MouseManager::kRelease, [&](int x, int y) {
-    snd2.play();
-  });
-  bmap.setButtonCallback(
-      sf::Mouse::Middle, MouseManager::kPress, [&](int x, int y) {
-    snd2.play();
-  });
-  bmap.setButtonCallback(
-      sf::Mouse::Right, MouseManager::kPress, [&](int x, int y) {
-    snd2.play();
-  });
 
   sf::Event event;
   while (window.isOpen()) {
@@ -138,10 +126,10 @@ void Program::run() {
         window.close();
       } else if (event.type >= sf::Event::KeyPressed &&
                  event.type <= sf::Event::KeyReleased) {
-        KeyManager::event(event);
+        KeyManager::eventProcess(event);
       } else if (event.type >= sf::Event::MouseWheelScrolled &&
                  event.type <= sf::Event::MouseLeft) {
-        MouseManager::event(event);
+        MouseManager::eventProcess(event);
       }
     }
     KeyManager::framework();

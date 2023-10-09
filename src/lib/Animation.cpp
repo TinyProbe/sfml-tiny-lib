@@ -6,12 +6,12 @@ Animation::Animation()
 
 Animation::Animation(AnimeStore const &animes)
     : ownership(new Animation::Inner()) {
-  ownership->animes.assign(animes.begin(), animes.end());
+  ownership->animes_.assign(animes.begin(), animes.end());
 }
 
 Animation::Animation(usize const &anime_count)
     : ownership(new Animation::Inner()) {
-  ownership->animes.resize(anime_count);
+  ownership->animes_.resize(anime_count);
 }
 
 Animation::Animation(Animation const &rhs)
@@ -38,56 +38,56 @@ Animation Animation::clone() const {
 
 usize Animation::getAnimeCount() const {
   this->ownershipCheck();
-  return ownership->animes.size();
+  return ownership->animes_.size();
 }
 
 void Animation::setAnimeCount(usize const &anime_count) {
   this->ownershipCheck();
-  ownership->animes.resize(anime_count);
+  ownership->animes_.resize(anime_count);
 }
 
 usize Animation::getMotionCount(usize const &anime_code) const {
   this->codeCheck(anime_code);
-  return ownership->animes[anime_code].size();
+  return ownership->animes_[anime_code].size();
 }
 
 void Animation::setMotionCount(usize const &anime_code,
                                usize const &motion_count) {
   this->codeCheck(anime_code);
-  ownership->animes[anime_code].resize(motion_count);
+  ownership->animes_[anime_code].resize(motion_count);
 }
 
 AnimeStore const &Animation::getAnimes() const {
   this->ownershipCheck();
-  return ownership->animes;
+  return ownership->animes_;
 }
 
 void Animation::setAnimes(AnimeStore const &animes) {
   this->ownershipCheck();
-  ownership->animes.assign(animes.begin(), animes.end());
+  ownership->animes_.assign(animes.begin(), animes.end());
 }
 
 Anime const &Animation::getAnime(usize const &anime_code) const {
   this->codeCheck(anime_code);
-  return ownership->animes[anime_code];
+  return ownership->animes_[anime_code];
 }
 
 void Animation::setAnime(usize const &anime_code, Anime const &anime) {
   this->codeCheck(anime_code);
-  ownership->animes[anime_code].assign(anime.begin(), anime.end());
+  ownership->animes_[anime_code].assign(anime.begin(), anime.end());
 }
 
 Motion const &Animation::getMotion(usize const &anime_code,
                                    usize const &motion_code) const {
   this->codeCheck(anime_code, motion_code);
-  return ownership->animes[anime_code][motion_code];
+  return ownership->animes_[anime_code][motion_code];
 }
 
 void Animation::setMotion(usize const &anime_code,
                           usize const &motion_code,
                           Motion const &motion) {
   this->codeCheck(anime_code, motion_code);
-  ownership->animes[anime_code][motion_code] = motion;
+  ownership->animes_[anime_code][motion_code] = motion;
 }
 
 Animation::Inner::Inner() {
@@ -99,7 +99,7 @@ Animation::Inner::Inner(Animation::Inner const &rhs) {
 
 Animation::Inner &Animation::Inner::operator=(Animation::Inner const &rhs) {
   if (this == &rhs) { return *this; }
-  this->animes.assign(rhs.animes.begin(), rhs.animes.end());
+  this->animes_.assign(rhs.animes_.begin(), rhs.animes_.end());
   return *this;
 }
 
@@ -116,11 +116,11 @@ void Animation::ownershipCheck() const {
 void Animation::codeCheck(usize const &anime_code,
                           usize const &motion_code) const {
   this->ownershipCheck();
-  if (anime_code >= ownership->animes.size()) {
+  if (anime_code >= ownership->animes_.size()) {
     throw std::runtime_error("No exist anime_code.");
   } 
   if (motion_code != usize(-1) &&
-      motion_code >= ownership->animes[anime_code].size()) {
+      motion_code >= ownership->animes_[anime_code].size()) {
     throw std::runtime_error("No exist motion_code.");
   }
 }

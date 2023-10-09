@@ -57,9 +57,9 @@ class KeyManager {
 
    protected:
     struct Inner {
-      KeyCallbackStore callbacks;
-      std::vector<bool> can_repeat;
-      bool is_linked;
+      KeyCallbackStore callbacks_;
+      std::vector<bool> can_repeat_;
+      bool is_linked_;
 
       explicit Inner();
       explicit Inner(Inner const &rhs);
@@ -78,7 +78,7 @@ class KeyManager {
                            usize const &key_event_code = -1) const;
   }; // KeyMap
 
-  static void event(sf::Event const &event);
+  static void eventProcess(sf::Event const &event);
   static void framework();
 
   static usize getKeyCount() noexcept;
@@ -103,8 +103,8 @@ class KeyManager {
   static void link(KeyMap const *const &key_map) noexcept;
   static void unlink() noexcept;
 
-  static std::vector<bool> key_state;
-  static KeyMap const *key_map;
+  static std::vector<bool> key_state_;
+  static KeyMap const *key_map_;
 }; // KeyManager
 
 #endif

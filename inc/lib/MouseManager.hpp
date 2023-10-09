@@ -56,8 +56,8 @@ class MouseManager {
 
    protected:
     struct Inner {
-      ButtonCallbackStore callbacks;
-      bool is_linked;
+      ButtonCallbackStore callbacks_;
+      bool is_linked_;
 
       explicit Inner();
       explicit Inner(Inner const &rhs);
@@ -86,7 +86,7 @@ class MouseManager {
     kLeave,
     kMouseEventCount,
   };
-  static void event(sf::Event const &event);
+  static void eventProcess(sf::Event const &event);
   static void framework();
   static void framework(sf::WindowBase const &relativeTo);
 
@@ -124,10 +124,10 @@ class MouseManager {
 
   static void codeCheck(usize const &mouse_event_code);
 
-  static bool is_entered;
-  static ButtonMap const *button_map;
-  static std::vector<bool> button_state;
-  static std::vector<ButtonCallback> mouse_event_callbacks;
+  static bool is_entered_;
+  static ButtonMap const *button_map_;
+  static std::vector<bool> button_state_;
+  static std::vector<ButtonCallback> mouse_event_callbacks_;
 }; // MouseManager
 
 #endif

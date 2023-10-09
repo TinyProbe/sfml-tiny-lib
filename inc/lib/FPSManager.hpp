@@ -21,14 +21,14 @@ class FPSManager {
   FPSManager &operator=(FPSManager const &rhs) = delete;
   ~FPSManager() = delete;
 
-  static std::list<u64> time_per_frame;
-  static sf::Clock clock;
-  static u64 framerate_limit;
-  static u64 term;
-  static u64 remain;
-  static u64 add_per_frame;
-  static u64 add;
-  static u64 target;
+  static std::list<u64> time_per_frame_;
+  static sf::Clock clock_;
+  static u64 framerate_limit_;
+  static u64 term_;
+  static u64 remain_;
+  static u64 add_per_frame_;
+  static u64 add_;
+  static u64 target_;
 
 }; // FPSManager
 
