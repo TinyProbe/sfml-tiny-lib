@@ -1,4 +1,4 @@
-#include "common.hpp"
+#include <common.h>
 
 void Program::run() {
   // auto fullModes = sf::VideoMode::getFullscreenModes();
@@ -15,11 +15,11 @@ void Program::run() {
   );
 
   // fps manager
-  FPSManager::setFramerateLimit(0);
+  FPSManager::setFramerateLimit(120);
 
   // fps counter
   sf::Font fnt1;
-  if (!fnt1.loadFromFile("res/font/GoMonoNerdFont-Regular.ttf")) {
+  if (!fnt1.loadFromFile("resource/font/GoMonoNerdFont-Regular.ttf")) {
     throw std::runtime_error("fnt1 load failed!");
   }
   sf::Text txt1;
@@ -30,7 +30,7 @@ void Program::run() {
   txt1.setPosition(0, 0);
 
   // background
-  WrapImage img1("res/background/ereve.jpg");
+  WrapImage img1("resource/background/ereve.jpg");
   WrapTexture tex1(img1.getImage());
   sf::RectangleShape rts1;
   rts1.setSize(sf::Vector2f({ kWidth, kHeight }));
@@ -38,7 +38,8 @@ void Program::run() {
   rts1.setPosition(0, 0);
 
   // monster
-  WrapImage img2("res/Monsters/TrollDark.PNG");
+  WrapImage img2(
+      "resource/maple/mob/green_mushroom/move/1110100.img.move.0.png");
   img2.createMaskFromColor(img2.getPixel(0, 0)); // background to invisible
   WrapTexture tex2(img2.getImage());
   sf::RectangleShape rts2;
@@ -47,7 +48,7 @@ void Program::run() {
   rts2.setPosition(300, 300);
 
   // sprite
-  WrapImage img3("res/sprite/red_drake.png");
+  WrapImage img3("resource/sprite/red_drake.png");
   WrapTexture tex3(img3.getImage());
   sf::Sprite spr1;
   spr1.setTexture(tex3.getTexture());
@@ -68,8 +69,8 @@ void Program::run() {
   // AnimeStore const &asd = anm1.getAnimes();
   // std::cout << asd[0][0].first.width << '\n';
 
-  WrapSoundBuffer sbf1("res/sound/ereve.mp3");
-  WrapSoundBuffer sbf2("res/sound/attack.mp3.flac");
+  WrapSoundBuffer sbf1("resource/sound/ereve.mp3");
+  WrapSoundBuffer sbf2("resource/sound/attack.mp3.flac");
   sf::Sound snd1(sbf1.getSoundBuffer());
   sf::Sound snd2(sbf2.getSoundBuffer());
   // background music
@@ -135,6 +136,7 @@ void Program::run() {
     KeyManager::framework();
     MouseManager::framework(window);
     txt1.setString(std::to_string(FPSManager::getCurrentFPS()));
+    
 
     spr1.setRotation(usize(spr1.getRotation() + 1.0f) % 360);
 

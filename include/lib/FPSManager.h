@@ -1,5 +1,5 @@
-#ifndef FPS_MANAGER_HPP_
-#define FPS_MANAGER_HPP_
+#ifndef SFML_LIB_FPSMANAGER_H_
+#define SFML_LIB_FPSMANAGER_H_
 
 #include <list>
 #include <SFML/System/Clock.hpp>
@@ -32,4 +32,4 @@ class FPSManager {
 
 }; // FPSManager
 
-#endif
+#endif // SFML_LIB_FPSMANAGER_H_

@@ -1,7 +1,7 @@
-#ifndef HEARABLE_HPP_
-#define HEARABLE_HPP_
+#ifndef SFML_DEV_OBJECT_HEARABLE_H_
+#define SFML_DEV_OBJECT_HEARABLE_H_
 
-#include "dev/object/Object.hpp"
+#include <dev/object/Object.h>
 
 class Hearable : virtual public Object {
  public:
@@ -28,4 +28,4 @@ class Hearable : virtual public Object {
   virtual void ownershipCheck() const = 0;
 }; // Hearable
 
-#endif
+#endif // SFML_DEV_OBJECT_HEARABLE_H_

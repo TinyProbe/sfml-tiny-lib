@@ -1,5 +1,5 @@
-#ifndef ANIMATION_HPP_
-#define ANIMATION_HPP_
+#ifndef SFML_LIB_ANIMATION_H_
+#define SFML_LIB_ANIMATION_H_
 
 #include <vector>
 #include <utility>
@@ -59,4 +59,4 @@ class Animation {
 
 }; // Animation
 
-#endif
+#endif // SFML_ANIMATION_H_

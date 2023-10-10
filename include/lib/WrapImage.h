@@ -1,5 +1,5 @@
-#ifndef WRAP_IMAGE_HPP_
-#define WRAP_IMAGE_HPP_
+#ifndef SFML_LIB_WRAPIMAGE_H_
+#define SFML_LIB_WRAPIMAGE_H_
 
 #include <SFML/Graphics.hpp>
 
@@ -69,4 +69,4 @@ class WrapImage {
   virtual void ownershipCheck() const;
 }; // WrapImage
 
-#endif
+#endif // SFML_LIB_WRAPIMAGE_H_

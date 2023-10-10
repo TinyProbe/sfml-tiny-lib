@@ -1,7 +1,7 @@
-#ifndef VISIBLE_HPP_
-#define VISIBLE_HPP_
+#ifndef SFML_DEV_OBJECT_VISIBLE_H_
+#define SFML_DEV_OBJECT_VISIBLE_H_
 
-#include "dev/object/Object.hpp"
+#include <dev/object/Object.h>
 
 class Visible : virtual public Object {
  public:
@@ -28,4 +28,4 @@ class Visible : virtual public Object {
   virtual void ownershipCheck() const = 0;
 }; // Visible
 
-#endif
+#endif // SFML_DEV_OBJECT_VISIBLE_H_

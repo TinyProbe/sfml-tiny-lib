@@ -1,4 +1,4 @@
-#include "lib/FPSManager.hpp"
+#include <lib/FPSManager.h>
 
 #include <thread>
 

@@ -1,5 +1,5 @@
-#ifndef OBJECT_HPP_
-#define OBJECT_HPP_
+#ifndef SFML_DEV_OBJECT_OBJECT_H_
+#define SFML_DEV_OBJECT_OBJECT_H_
 
 #include <SFML/Graphics.hpp>
 
@@ -49,4 +49,4 @@ class Object {
   virtual void ownershipCheck() const = 0;
 }; // Object
 
-#endif
+#endif // SFML_DEV_OBJECT_OBJECT_H_

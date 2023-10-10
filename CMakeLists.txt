@@ -3,7 +3,7 @@ project(sfml LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(inc)
+include_directories(include)
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -11,9 +11,9 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 FILE(GLOB Srcs
-  src/*.cpp
-  src/dev/*.cpp
-  src/lib/*.cpp
+  source/*.cc
+  source/dev/*.cc
+  source/lib/*.cc
 )
 add_executable(sfml ${Srcs})
 target_link_libraries(sfml

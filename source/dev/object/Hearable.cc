@@ -1,4 +1,4 @@
-#include "dev/object/Hearable.hpp"
+#include <dev/object/Hearable.h>
 
 Hearable::Inner::Inner()
     : Object::Inner() {

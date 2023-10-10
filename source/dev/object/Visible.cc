@@ -1,4 +1,4 @@
-#include "dev/object/Visible.hpp"
+#include <dev/object/Visible.h>
 
 Visible::Inner::Inner()
     : Object::Inner() {

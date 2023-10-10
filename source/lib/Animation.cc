@@ -1,4 +1,4 @@
-#include "lib/Animation.hpp"
+#include <lib/Animation.h>
 
 Animation::Animation()
     : ownership(new Animation::Inner()) {

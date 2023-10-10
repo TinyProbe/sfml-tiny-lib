@@ -1,4 +1,4 @@
-#include "dev/object/Collidable.hpp"
+#include <dev/object/Collidable.h>
 
 Collidable::Inner::Inner()
     : Object::Inner() {

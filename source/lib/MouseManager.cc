@@ -1,4 +1,4 @@
-#include "lib/MouseManager.hpp"
+#include <lib/MouseManager.h>
 
 #include <stdexcept>
 #include <iostream>

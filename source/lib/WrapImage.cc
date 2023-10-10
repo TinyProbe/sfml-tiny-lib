@@ -1,4 +1,4 @@
-#include "lib/WrapImage.hpp"
+#include <lib/WrapImage.h>
 
 #include <stdexcept>
 

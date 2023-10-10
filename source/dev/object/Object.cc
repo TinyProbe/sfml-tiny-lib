@@ -1,4 +1,4 @@
-#include "dev/object/Object.hpp"
+#include <dev/object/Object.h>
 
 sf::Vector2f const &Object::getPosition() const {
   return ownership->position_;

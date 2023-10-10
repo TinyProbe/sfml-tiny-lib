@@ -1,9 +1,9 @@
-#ifndef WRAP_TEXTURE_HPP_
-#define WRAP_TEXTURE_HPP_
+#ifndef SFML_LIB_WRAPTEXTURE_H_
+#define SFML_LIB_WRAPTEXTURE_H_
 
 #include <SFML/Graphics.hpp>
 
-#include "lib/WrapImage.hpp"
+#include <lib/WrapImage.h>
 
 using usize = unsigned long;
 using u32 = unsigned int;
@@ -83,4 +83,4 @@ class WrapTexture {
 
 }; // WrapTexture
 
-#endif
+#endif // SFML_LIB_WRAPTEXTURE_H_

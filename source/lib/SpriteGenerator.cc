@@ -1,4 +1,4 @@
-#include "lib/SpriteGenerator.hpp"
+#include <lib/SpriteGenerator.h>
 
 #include <stdexcept>
 #include <algorithm>

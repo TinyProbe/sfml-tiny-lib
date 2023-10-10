@@ -1,7 +1,7 @@
-#ifndef COLLIDABLE_HPP_
-#define COLLIDABLE_HPP_
+#ifndef SFML_DEV_OBJECT_COLLIDABLE_H_
+#define SFML_DEV_OBJECT_COLLIDABLE_H_
 
-#include "dev/object/Object.hpp"
+#include <dev/object/Object.h>
 
 class Collidable : virtual public Object {
  public:
@@ -28,4 +28,4 @@ class Collidable : virtual public Object {
   virtual void ownershipCheck() const = 0;
 }; // Collidable
 
-#endif
+#endif // SFML_DEV_OBJECT_COLLIDABLE_H_

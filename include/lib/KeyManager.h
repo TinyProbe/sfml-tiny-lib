@@ -1,5 +1,5 @@
-#ifndef KEY_MANAGER_HPP_
-#define KEY_MANAGER_HPP_
+#ifndef SFML_LIB_KEYMANAGER_H_
+#define SFML_LIB_KEYMANAGER_H_
 
 #include <functional>
 #include <utility>
@@ -107,4 +107,4 @@ class KeyManager {
   static KeyMap const *key_map_;
 }; // KeyManager
 
-#endif
+#endif // SFML_LIB_KEYMANAGER_H_

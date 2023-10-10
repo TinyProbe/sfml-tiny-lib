@@ -1,4 +1,4 @@
-#include "lib/WrapTexture.hpp"
+#include <lib/WrapTexture.h>
 
 #include <stdexcept>
 

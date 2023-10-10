@@ -1,5 +1,5 @@
-#ifndef PROGRAM_HPP_
-#define PROGRAM_HPP_
+#ifndef SFML_DEV_PROGRAM_H_
+#define SFML_DEV_PROGRAM_H_
 
 class Program {
  public:
@@ -14,4 +14,4 @@ class Program {
   static void loop();
 }; // Program
 
-#endif
+#endif // SFML_DEV_PROGRAM_H_

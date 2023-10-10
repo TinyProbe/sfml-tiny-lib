@@ -1,5 +1,5 @@
-#ifndef WRAP_SOUND_BUFFER_HPP_
-#define WRAP_SOUND_BUFFER_HPP_
+#ifndef SFML_LIB_WRAPSOUNDBUFFER_H_
+#define SFML_LIB_WRAPSOUNDBUFFER_H_
 
 #include <SFML/Audio/SoundBuffer.hpp>
 
@@ -52,6 +52,6 @@ class WrapSoundBuffer {
  private:
   explicit WrapSoundBuffer(WrapSoundBuffer::Inner *const &ownership) noexcept;
   virtual void ownershipCheck() const;
-};
+}; // WrapSoundBuffer
 
-#endif
+#endif // SFML_LIB_WRAPSOUNDBUFFER_H_

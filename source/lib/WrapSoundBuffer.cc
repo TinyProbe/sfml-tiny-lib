@@ -1,4 +1,4 @@
-#include "lib/WrapSoundBuffer.hpp"
+#include <lib/WrapSoundBuffer.h>
 
 #include <stdexcept>
 

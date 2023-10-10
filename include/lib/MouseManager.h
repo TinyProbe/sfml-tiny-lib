@@ -1,5 +1,5 @@
-#ifndef MOUSE_MANAGER_HPP_
-#define MOUSE_MANAGER_HPP_
+#ifndef SFML_LIB_MOUSEMANAGER_H_
+#define SFML_LIB_MOUSEMANAGER_H_
 
 #include <functional>
 #include <utility>
@@ -130,4 +130,4 @@ class MouseManager {
   static std::vector<ButtonCallback> mouse_event_callbacks_;
 }; // MouseManager
 
-#endif
+#endif // SFML_LIB_MOUSEMANAGER_H_

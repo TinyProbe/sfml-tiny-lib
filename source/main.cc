@@ -1,3 +1,3 @@
-#include "dev/Program.hpp"
+#include <dev/Program.h>
 
 int main() { Program::run(); }

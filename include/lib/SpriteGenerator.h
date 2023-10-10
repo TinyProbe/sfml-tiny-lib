@@ -1,10 +1,10 @@
-#ifndef SPRITE_GENERATOR_HPP_
-#define SPRITE_GENERATOR_HPP_
+#ifndef SFML_LIB_SPRITEGENERATOR_H_
+#define SFML_LIB_SPRITEGENERATOR_H_
 
 #include <vector>
 
-#include "lib/WrapImage.hpp"
-#include "lib/WrapTexture.hpp"
+#include <lib/WrapImage.h>
+#include <lib/WrapTexture.h>
 
 using i32 = int;
 using f32 = float;
@@ -81,4 +81,4 @@ class SpriteGenerator {
 
 }; // SpriteGenerator
 
-#endif
+#endif // SFML_LIB_SPRITEGENERATOR_H_
